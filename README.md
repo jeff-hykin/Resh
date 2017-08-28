@@ -9,3 +9,5 @@ Rather than a command line, the interface looks like iMessage and the Google Ass
 Rather than abbreviations such as "ls" , "cd" , "mv" , "pwd" commands are verbal "show files", "go to " , "move", "where am I".
 
 This app is currently in alpha and at the moment is only for Mac. Once the mac version is complete, I plan to work on a linux version, and after linux is complete Windows 10 will be considered. 
+
+The app is being built using Electron.
