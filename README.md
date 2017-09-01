@@ -8,6 +8,10 @@ This app lets you have the power of terminal/Unix/Bash without having to use cry
 Rather than a command line, the interface looks like iMessage and the Google Assistant.
 Rather than abbreviations such as "ls" , "cd" , "mv" , "pwd" commands are verbal "show files", "go to " , "move", "where am I".
 
+![rebygif](https://user-images.githubusercontent.com/17692058/29953404-8ec19c4c-8e95-11e7-8770-c628ee57dfe0.gif)
+
 This app is currently in alpha and at the moment is only for Mac. Once the mac version is complete, I plan to work on a linux version, and after linux is complete Windows 10 will be considered. 
 
 The app is being built using Electron.
+
+
