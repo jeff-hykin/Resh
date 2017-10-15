@@ -21,7 +21,7 @@ Many things like permissions have been totally overhauled into a Q&A system. (Se
 
 # Development
 
-This app is functional but in alpha. At the moment it is only being developed for Mac. Once the mac version is complete, I may work on a Linux version. Work on this likely won't be finished till at least the fall semester of 2017. All the basic bash commands have been added. The larest two hurdles remaining are getting SSH to work seamlessly/securely, and also getting all of the depenecies in working order. 
+This app is functional but in alpha. At the moment it is only being developed for Mac. Once the mac version is complete, I may work on a Linux version. Work on this likely won't be finished till at least the fall semester of 2017. All the basic bash commands have been added. The larest two hurdles remaining are getting SSH to work seamlessly/securely, and also getting all of the depenecies in protable/working order. 
 
 The app is being built using Electron.
 
