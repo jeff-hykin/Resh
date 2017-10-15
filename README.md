@@ -4,7 +4,7 @@ Demo: https://www.youtube.com/watch?v=_DzvYvrkBXo&feature=youtu.be
 <img width="776" alt="screen shot 2017-08-28 at 2 22 33 am" src="https://user-images.githubusercontent.com/17692058/29763276-1ef8629c-8b98-11e7-9a9c-1154195a5f52.png">
 
 
-This is a console that everyone can use. It has all the power of bash without having to use cryptic commands. The suggestions and tab-to-complete make the interface quite quick despite the longer names for commands. The suggestions make learning new commands incredibly easy. However, it's also fully backwards compatible with all console commands.
+This is a console that everyone can use. It has all the power of bash without having to use cryptic commands. The suggestions and tab-to-complete make the interface quite quick despite the longer names for commands. The suggestions make learning new commands incredibly easy. However, it is also fully backwards compatible with console commands (bash or your shell of choice).
 
 Many unix things were made more simple, for example `rm -r` for folders and `rm` for files has been simplified to one "delete" command.
 
