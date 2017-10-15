@@ -1,4 +1,4 @@
-# resh
+# Resh
 Demo: https://www.youtube.com/watch?v=_DzvYvrkBXo&feature=youtu.be
 
 <img width="776" alt="screen shot 2017-08-28 at 2 22 33 am" src="https://user-images.githubusercontent.com/17692058/29763276-1ef8629c-8b98-11e7-9a9c-1154195a5f52.png">
@@ -15,7 +15,7 @@ Many things like permissions have been totally overhauled into a Q&A system. (Se
 ![rebygif](https://user-images.githubusercontent.com/17692058/29953404-8ec19c4c-8e95-11e7-8770-c628ee57dfe0.gif)
 
 
-#Development
+# Development
 
 This app is functional but in alpha. At the moment it is only being developed for Mac. Once the mac version is complete, I may work on a Linux version. Work on this likely won't be finished till at least the fall semester of 2017. All the basic bash commands have been added. The larest two hurdles remaining are getting SSH to work seamlessly/securely, and also getting all of the depenecies in working order. 
 
