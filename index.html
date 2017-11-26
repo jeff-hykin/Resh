@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!-- DONE, make it an app-->
+<!-- DONE, connect the messages to system-->
+<!-- DONE, get feedback from system -->
+<!-- DONE-ish, keep track of directory changes-->
+<!-- DONE, allow for mutli-step commands (move __ to __)-->
+<!-- DONE, have menu bubbles to choose from, like the google assistant-->
+<!-- DONE, have tab-completions-->
+<!-- have a that^ feature that can grab last-used file locations-->
+<!-- have keywords that change color/input-->
+<!-- have drag-and-drop files-->
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Reby</title>
+    <link rel="stylesheet" href="main.css">
+  </head>
+  <body>
+    <div class="border">
+      <form class="chat">
+        <div class="messages" id="main_container">
+          <div class="message">
+            <div class="myMessage">
+              <p>What is this? It looks like iMessage</p>
+              <date><b>You</b> </date>
+            </div>
+          </div>
+          <div class="message">
+            <div class="fromThem">
+              <p>This is a program for talking to me, Reby!</p>
+              <date><b>Reby</b> </date>
+            </div>
+          </div>
+          <div class="message">
+            <div class="fromThem">
+              <p>I control your computer, and you can tell me what to do</p>
+              <date><b>Reby</b> </date>
+            </div>
+          </div>
+        </div>
+        <div id="suggestionBox"></div>
+        <div id="inputBox">
+          <input type="text" id="suggestionOverlay" placeholder="">
+          <input type="text" id="messageInput" placeholder="">
+          <input type="submit" value="Send">
+        </div>
+      </form>
+    </div>
+    <script src="jquery.min.js"></script>
+    <script src="renderer.js"></script>
+  </body>
+</html>
