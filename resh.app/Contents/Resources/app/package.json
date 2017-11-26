@@ -1,0 +1,26 @@
+{
+  "name": "resh",
+  "version": "0.0.1",
+  "description": "An easy to use shell app",
+  "main": "main.js",
+  "scripts": {
+    "test": "electron .",
+    "make": "electron-packager $PWD resh --debug --platform=darwin --arch=x64 --electron-version=1.6.11 --out=$HOME/Desktop --overwrite;mv $HOME/Desktop/resh-darwin-x64/resh.app $HOME/Desktop;rm -rf $HOME/Desktop/resh-darwin-x64"
+  },
+  "keywords": [
+    "shell",
+    "easy"
+  ],
+  "author": "Jeff Hykin",
+  "license": "ISC",
+  "devDependencies": {
+    "devtron": "^1.4.0",
+    "electron-packager": "^8.7.2",
+    "electron-debug": "^1.4.0"
+  },
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "electron-sudo": "^4.0.12",
+    "jquery": "^3.2.1"
+  }
+}
