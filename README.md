@@ -28,6 +28,6 @@ This app is still in alpha but is stable and useful enough to be my daily termin
 
 The app is being built using Electron and Node.js.
 
-To run things youself or modify the existing code, make sure you have Node.js and Electron installed. Then to run/compile the code, simply clone the repo, then on terminal go to the directory of the clone, and to test it do `electron .` and to create a mac app-file on your desktop do `npm run make`.
+To run things youself or modify the existing code, make sure you have Node.js and Electron installed. Then to run/compile the code, simply clone the repo, then, using terminal, go to the directory of the clone, and to test it run the command `electron .` and to create a mac app-file on your desktop run `npm run make`.
 
 
