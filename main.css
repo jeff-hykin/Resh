@@ -1,6 +1,5 @@
 p {
   margin: 0;
-  white-space: pre-wrap;
   -webkit-margin-before: 0px;
   -webkit-margin-after: 0px;
   -webkit-margin-start: 0px;
@@ -160,6 +159,9 @@ form.chat {
     background-color: rgba(0, 0, 0, 0.15); }
   .fromThem ::-webkit-scrollbar-corner {
     background-color: transparent; }
+  .fromThem p {
+    white-space: pre-wrap;
+    overflow-x: scroll; }
   .fromThem:before {
     content: "";
     position: absolute;

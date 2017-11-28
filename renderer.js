@@ -194,21 +194,32 @@
 
 
 
+//
 // globals 
+//
     var $              = require('jQuery') 
     const { spawn }    = require('child_process');
     const bash_process = spawn('bash\n', { shell: true })
-    bash_process.stdin.write("cd $HOME/Desktop\n")
     var location_history = []
     var command_history  = []
     var dont_run_message = false
+    // for the bash commands
+    var bash_end_string                = "" 
+    var bash_response                  = ""
+    var aggregated_bash_response       = ""
+    var end_of_bash_response_was_found = false
+    // for the html elements 
     var message_input_Element = document.getElementById("messageInput")
     var shadowText            = document.getElementById("suggestionOverlay")
     var body                  = document.getElementsByClassName('body')
     var suggestion_box        = document.getElementById("suggestionBox")
+    // for reby commands 
+    initial_checks     = [] // initial_checks is a list of functions that should return either a response-function or null
+    RESPONSE_FUNCTIONS = []// RESPONSE_FUNCTIONS will contain the next response reby should give
+    command_prefixes   = [] // list of start-strings to be used for tab completion
     // create a reby object to hold some functions and variables 
     var reby = {
-                says : function(message_,monospaced_font=false)
+                says : function(message_,monospaced_font=false,dont_wrap_lines=false)
                     {
                         // if there is no message_, then do nothing
                         if (message_ == "") { return }
@@ -221,28 +232,28 @@
                         var month = d.getMonth() + 1;
                         var day = d.getDate();
                         var currentDate =
-                          (('' + month).length < 2 ? '0' : '') + month + '/' +
-                          (('' + day).length < 2 ? '0' : '') + day + '/' +
-                          d.getFullYear() + '&nbsp;&nbsp;' + clock;
+                        (('' + month).length < 2 ? '0' : '') + month + '/' +
+                        (('' + day).length < 2 ? '0' : '') + day + '/' +
+                        d.getFullYear() + '&nbsp;&nbsp;' + clock;
                         
                         number_of_newlines = (message_.match(/\n/g) || []).length
 
                         // options for the message
-                        scroll_vertically_part_1 = 
-                        scroll_vertically_part_2 = ""
+                        scroll_vertically = ""
                         font_class        = ""
-                        if (number_of_newlines>50) { scroll_vertically_part_2 = ' class="Scrollable" ' }
-                        if (monospaced_font)       { font_class               = ' class="monospaced" ' }
-                        
+                        no_wrap           = ""
+                        console.log("dont wrap lines?",dont_wrap_lines)
+                        if (number_of_newlines>50) { scroll_vertically = ' class="Scrollable" ' }
+                        if (monospaced_font)       { font_class        = ' class="monospaced" ' }
+                        if (dont_wrap_lines)       { no_wrap           = ' style="white-space: pre;"' }
 
                         // Escape HTML, FIXME this is currently only escaping newlines
                         // replace newlines with \n
                         message_ = message_.replace(/\n/g,"<br>")
-                        
                         // FIXME, check for accidental html-escape sequences 
                         
                         // create Reby's response
-                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"'+scroll_vertically_part_1+'><p'+font_class+scroll_vertically_part_2+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
+                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p'+no_wrap+font_class+scroll_vertically+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
                         
                         // Scroll down when the new message_ is made
                         var focusBottom = document.getElementById("main_container")
@@ -310,7 +321,11 @@
                     }
             }
 
+//
+//
 // general helper functions 
+//
+//
     // got the below function from https://stackoverflow.com/questions/646611/programmatically-selecting-partial-text-in-an-input-field
     function createSelection(field, start, end) 
         {
@@ -366,107 +381,13 @@
             // put things on the console whether or not they're being called from html
             console.log.apply(this, things)
         }
-    
 
-    //   
-    // NEW BASH helper functions, 
-    //
 
-    // timer_for lets async functions wait for other asyncs to finish
-    function timer_for(time_amount)
-        {
-            return new Promise(resolve => 
-                {
-                    setTimeout(()=>{ resolve(null) }, time_amount)
-                })
-        }
-    
-
-    bash_end_string                = "" 
-    bash_response                  = ""
-    aggregated_bash_response       = ""
-    end_of_bash_response_was_found = false
-    // when the bash process gives output
-    bash_process.stdout.on('data', (data) => 
-        {
-            aggregated_bash_response += `${data}` // converts the data buffer into a string
-            console.log("the current aggregated response is ", aggregated_bash_response)
-            end_regex = new RegExp(bash_end_string )
-            if (aggregated_bash_response.search(end_regex) > -1)
-                {
-                    console.log("the ending key was found")
-                    bash_response = aggregated_bash_response.slice(0,aggregated_bash_response.search(end_regex))
-                    // get rid of the stuff from aggregated_bash_reponse
-                    end_removal_regex = new RegExp("[\\s\\S]*" +bash_end_string + "\n")
-                    aggregated_bash_response = aggregated_bash_response.replace(end_removal_regex,"")
-                    console.log("aggregated response after is")
-                    // let BashRun() know that the response is ready
-                    end_of_bash_response_was_found = true
-                }
-            else 
-                {
-                    // console.log("bash response didn't contain all output in 1-go")
-                }
-        })
-    bash_process.stderr.on('data', (data) => 
-        {
-            aggregated_bash_response += `${data}`
-            console.log("current stderr aggregated response:\n",Indent(aggregated_bash_response))
-            //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
-        })
-    // Core Bash command methods
-    async function BashRun(command_)
-        {
-            // send the command
-            bash_end_string   =  `end${Math.random()}`
-            console.log("The ending key is ",bash_end_string)
-            bash_process.stdin.write(`${command_}\necho ${bash_end_string}\n`)
-            // wait for 200 miliseconds, then check if bash has responded
-            loop_num = 0
-            while (!end_of_bash_response_was_found) 
-                { 
-                    loop_num += 1
-                    a = await timer_for(100)
-                    if (loop_num > 100)
-                        {
-                            show("BashRun is probabaly in an infinite loop",loop_num)
-                        }
-                }
-            
-            // once a response is given, reset the variables, and return the response
-            answer = bash_response
-            bash_response = ""
-            end_of_bash_response_was_found = false
-            return answer
-        }
-    async function BashRunAndCheck(command_,key_regex)
-        {
-            // send the command
-            bash_process.stdin.write(command_+"\n")
-            // wait for 200 miliseconds, then check if bash has responded
-            loop_num = 0
-            while (aggregated_bash_response.search(key_regex)==-1) 
-                {
-                    loop_num += 1
-                    a = await timer_for(200)
-                    if (loop_num > 100)
-                        {
-                            show("BashRunAndCheck is probabaly in an infinite loop",loop_num)
-                        }
-                }
-            
-            // remove the info from the aggregated_bash_response
-            aggregated_bash_response = aggregated_bash_response.replace(key_regex,"") 
-            
-            show("output of BashRunAndCheck is:")
-            show("var:aggregated_bash_response")
-            // once a response is given, reset the variables, and return the response
-            answer                         = aggregated_bash_response
-            aggregated_bash_response       = ""
-            end_of_bash_response_was_found = false
-            return answer
-        }
-    
+//
+//
+//  Initilization of things 
+//
+//
     // FIXME, all_file_suggestions doesnt work till after the first command (that is: it doesnt get populated till after RebyResponse() runs)
     // FIXME, location_history shouldn't need to be hardcoded populated at the begining
     location_history.push("$HOME/Desktop")
@@ -477,75 +398,58 @@
     command_prefix_index   = null
     // show the default suggestions 
     reby.showSuggestions()
+    // start at the desktop
+    bash_process.stdin.write("cd $HOME/Desktop\n")
 
-
-// Onload
-    window.onload = function() 
-        {
-            // focus on the main input box
-            message_input_Element.focus()
-        }
-
-// TODO, put this function somewhere to make it more organized 
-// this function selects the [folder] in goto [folder] 
-// and does similar things for other suggestions in []
-function TryToSelectBracketPlaceHolder()
-    {
-        // if theres an input box (square brackets) then select them
-        // FIXME currently this only works for the first input box
-        //    to fix this, check if cursor is not at the end 
-        //    if its not at the end, then when the user presses tab 
-        //    find the next [] that comes after the cursor 
-        //    then highlight that []
-        //console.log("message_input_Element.value is:",message_input_Element.value)
-        if (message_input_Element.value.search(/\[.+\]/) > -1)
-            {
-                // find the start of the first bracket
-                var begining_of_box_input = message_input_Element.value.search(/\[.+/)
-                // find the end
-                var end_of_box_input      = message_input_Element.value.search(/\]/) + 1
-                // select that text 
-                createSelection(message_input_Element,begining_of_box_input,end_of_box_input)
-            }
-    }
-
+//
+//
 // Event-driven functions 
+//
+//
+    // when window is loaded Onload
+        window.onload = function() 
+            {
+                // focus on the main input box
+                message_input_Element.focus()
+            }
+
+
     // this fixes some annoying scrolling stuff 
-    $(document).on('DOMMouseScroll mousewheel', '.Scrollable', function(ev) 
-        {
-            // I got this function from  http://jsfiddle.net/4wrxq/272/
-            // to make this work there is also a "Scrollable" class in the CSS
-            // and the thing you dont want to scroll needs the CSS overflow: hidden attribute
-            var $this        = $(this),
-                scrollTop    = this.scrollTop,
-                scrollHeight = this.scrollHeight,
-                height       = $this.innerHeight(),
-                delta = (ev.type == 'DOMMouseScroll' ?
-                    ev.originalEvent.detail * -40 :
-                    ev.originalEvent.wheelDelta),
-                up = delta > 0
-        
-            var prevent = function() 
-                {
-                    ev.stopPropagation()
-                    ev.preventDefault()
-                    ev.returnValue = false
-                    return false
-                }
-        
-            if (!up && -delta > scrollHeight - height - scrollTop) 
-                {
-                    // Scrolling down, but this will take us past the bottom.
-                    $this.scrollTop(scrollHeight)
-                    return prevent()
-                } 
-            else if (up && delta > scrollTop) 
-                {
-                    // Scrolling up, but this will take us past the top.
-                    $this.scrollTop(0)
-                    return prevent()
-                }
-        })
+        $(document).on('DOMMouseScroll mousewheel', '.Scrollable', function(ev) 
+            {
+                // I got this function from  http://jsfiddle.net/4wrxq/272/
+                // to make this work there is also a "Scrollable" class in the CSS
+                // and the thing you dont want to scroll needs the CSS overflow: hidden attribute
+                var $this        = $(this),
+                    scrollTop    = this.scrollTop,
+                    scrollHeight = this.scrollHeight,
+                    height       = $this.innerHeight(),
+                    delta = (ev.type == 'DOMMouseScroll' ?
+                        ev.originalEvent.detail * -40 :
+                        ev.originalEvent.wheelDelta),
+                    up = delta > 0
+            
+                var prevent = function() 
+                    {
+                        ev.stopPropagation()
+                        ev.preventDefault()
+                        ev.returnValue = false
+                        return false
+                    }
+            
+                if (!up && -delta > scrollHeight - height - scrollTop) 
+                    {
+                        // Scrolling down, but this will take us past the bottom.
+                        $this.scrollTop(scrollHeight)
+                        return prevent()
+                    } 
+                else if (up && delta > scrollTop) 
+                    {
+                        // Scrolling up, but this will take us past the top.
+                        $this.scrollTop(0)
+                        return prevent()
+                    }
+            })
     // When enter is pressed, then simulate clicking submit 
         $("input").keypress(function(event) 
             {
@@ -596,7 +500,7 @@ function TryToSelectBracketPlaceHolder()
                                 // if the placeholder text is different from the value
                                 if ( message_input_Element.value != shadowText.value )
                                     {
-                                      
+                                    
                                         // convert the placeholder into the actual content 
                                         message_input_Element.value = shadowText.value
                                         
@@ -723,7 +627,7 @@ function TryToSelectBracketPlaceHolder()
                                             }
                                     } // end for each command_prefixes
                             }
-                       
+                    
                     }// end if any other key
 
                 //console.log("about to check shadowText");
@@ -752,8 +656,211 @@ function TryToSelectBracketPlaceHolder()
                     }
             } // end function 
 
+    // when user sends their message 
+        $('form.chat input[type="submit"]').click(function(event) 
+            {
+                event.preventDefault()
+
+                // get the user's command 
+                var original_message  = message_input_Element.value;
+                // if there was input in the text box 
+                if (message_input_Element.value.length > 0 || !(message_input_Element.value == null)) 
+                    {
+
+                        // if empty or only whitespace input then dont do anything
+                        if (original_message.length == 0 || (original_message.match(/^\s+$/) != null))
+                            {
+                                // get rid of whitespace if there was any 
+                                message_input_Element.value = "" 
+                                return
+                            }
+                            
+                        // Handle command_history
+                            // add the new command 
+                            command_history.push(original_message)
+                            // reset the command_history_index so that its 
+                            // the last element in the history
+                            command_history_index = command_history.length 
+
+                        // get the time and date
+                        // TODO, add am/pm instead of 24 hour time
+                        var d = new Date();
+                        var clock = d.getHours() + ":" + (('' + d.getMinutes).length < 2 ? '0' : '') + d.getMinutes() + ":" + (('' + d.getSeconds).length < 2 ? '0' : '') + d.getSeconds();
+                        var month = d.getMonth() + 1;
+                        var day = d.getDate();
+                        var currentDate =
+                            (('' + month).length < 2 ? '0' : '') + month + '/' +
+                            (('' + day).length < 2 ? '0' : '') + day + '/' +
+                            d.getFullYear() + '&nbsp;&nbsp;' + clock;
+                        
+                        // create the user's command
+                        // FIXME, swap \n for break-statements 
+                        
+                        // only show non-passwords
+                        if (message_input_Element.type != "password")
+                            {
+                                $('form.chat div.messages').append('<div class="message"><div class="myMessage"><p>' + original_message + '</p><date><b>You </b>' + currentDate + '</date></div></div>');
+                            }
+                        
+                        
+                        // create the progress/loading bar at the top
+                        setTimeout(function() {    $('form.chat > span').addClass('spinner')    }, 100 )
+                        setTimeout(function() {    $('form.chat > span').removeClass('spinner') }, 2000)
+                        
+                        // reset the placeholder text 
+                        // FIXME, give a placeholder 
+                        shadowText.value = ''
+                    }
+                // get rid of the text in the input field 
+                message_input_Element.value = ""
+
+                // Scroll down when the new message_ is made
+                var focusBottom = document.getElementById("main_container")
+                focusBottom.scrollTop = focusBottom.scrollHeight
+
+                // reset the shadowText.value
+                shadowText.value = message_input_Element.value
+                command_prefix_shown = false
+                should_suggest_folders = false 
+                shadowText.value = ""
+
+                // give Reby the message_
+                // CHANGED
+                RebyResponse(original_message)
+            })
+
+
+
+
+
+
+//
+//
 // specific helper functions 
-    // go this from: https://stackoverflow.com/questions/20822273/best-way-to-get-folder-and-file-list-in-javascript
+//
+//
+    //
+    // BASH helper functions
+    //
+        // timer_for lets async functions wait for other asyncs to finish
+        function timer_for(time_amount)
+            {
+                return new Promise(resolve => 
+                    {
+                        setTimeout(()=>{ resolve(null) }, time_amount)
+                    })
+            }
+
+
+        
+        
+        
+        
+        // when the bash process gives output
+        bash_process.stdout.on('data', (data) => 
+            {
+                aggregated_bash_response += `${data}` // converts the data buffer into a string
+                console.log("the current aggregated response is ", aggregated_bash_response)
+                end_regex = new RegExp(bash_end_string )
+                if (aggregated_bash_response.search(end_regex) > -1)
+                    {
+                        console.log("the ending key was found")
+                        bash_response = aggregated_bash_response.slice(0,aggregated_bash_response.search(end_regex))
+                        // get rid of the stuff from aggregated_bash_reponse
+                        end_removal_regex = new RegExp("[\\s\\S]*" +bash_end_string + "\n")
+                        aggregated_bash_response = aggregated_bash_response.replace(end_removal_regex,"")
+                        console.log("aggregated response after is")
+                        // let BashRun() know that the response is ready
+                        end_of_bash_response_was_found = true
+                    }
+                else 
+                    {
+                        // console.log("bash response didn't contain all output in 1-go")
+                    }
+            })
+        bash_process.stderr.on('data', (data) => 
+            {
+                aggregated_bash_response += `${data}`
+                console.log("current stderr aggregated response:\n",Indent(aggregated_bash_response))
+                //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
+            })
+        async function BashRun(command_)
+            {
+                // send the command
+                bash_end_string   =  `end${Math.random()}`
+                console.log("The ending key is ",bash_end_string)
+                bash_process.stdin.write(`${command_}\necho ${bash_end_string}\n`)
+                // wait for 200 miliseconds, then check if bash has responded
+                loop_num = 0
+                while (!end_of_bash_response_was_found) 
+                    { 
+                        loop_num += 1
+                        a = await timer_for(100)
+                        if (loop_num > 100)
+                            {
+                                show("BashRun is probabaly in an infinite loop",loop_num)
+                            }
+                    }
+                
+                // once a response is given, reset the variables, and return the response
+                answer = bash_response
+                bash_response = ""
+                end_of_bash_response_was_found = false
+                return answer
+            }
+        async function BashRunAndCheck(command_,key_regex)
+            {
+                // send the command
+                bash_process.stdin.write(command_+"\n")
+                // wait for 200 miliseconds, then check if bash has responded
+                loop_num = 0
+                while (aggregated_bash_response.search(key_regex)==-1) 
+                    {
+                        loop_num += 1
+                        a = await timer_for(200)
+                        if (loop_num > 100)
+                            {
+                                show("BashRunAndCheck is probabaly in an infinite loop",loop_num)
+                            }
+                    }
+                
+                // remove the info from the aggregated_bash_response
+                aggregated_bash_response = aggregated_bash_response.replace(key_regex,"") 
+                
+                show("output of BashRunAndCheck is:")
+                show("var:aggregated_bash_response")
+                // once a response is given, reset the variables, and return the response
+                answer                         = aggregated_bash_response
+                aggregated_bash_response       = ""
+                end_of_bash_response_was_found = false
+                return answer
+            }
+
+
+
+    // this function selects the [folder] in goto [folder] 
+    // and does similar things for other suggestions in []
+    var TryToSelectBracketPlaceHolder = function()
+        {
+            // if theres an input box (square brackets) then select them
+            // FIXME currently this only works for the first input box
+            //    to fix this, check if cursor is not at the end 
+            //    if its not at the end, then when the user presses tab 
+            //    find the next [] that comes after the cursor 
+            //    then highlight that []
+            //console.log("message_input_Element.value is:",message_input_Element.value)
+            if (message_input_Element.value.search(/\[.+\]/) > -1)
+                {
+                    // find the start of the first bracket
+                    var begining_of_box_input = message_input_Element.value.search(/\[.+/)
+                    // find the end
+                    var end_of_box_input      = message_input_Element.value.search(/\]/) + 1
+                    // select that text 
+                    createSelection(message_input_Element,begining_of_box_input,end_of_box_input)
+                }
+        }
+
+
     // helps for excaping "" and such 
     function Escape(the_string)
         {
@@ -778,7 +885,7 @@ function TryToSelectBracketPlaceHolder()
     function ParseYesOrNo(the_string)
         {
             // FIXME, this needs to be more robust
-                 if (the_string.match(/^ *Yes */i)) { return true  }
+                if (the_string.match(/^ *Yes */i)) { return true  }
             else if (the_string.match(/^ *No */i )) { return false }
             else                                    { return null  }
         }
@@ -1025,7 +1132,7 @@ function TryToSelectBracketPlaceHolder()
         {
             // this lists files and  folders           : (ls -L -p -1 )
             // then only shows the files               : (grep -v "/$")
-            string_response = await BashRun('ls -L -p -1 | grep "/$" ')
+            string_response = await BashRun('ls -L -p -1 | grep -v "/$" ')
             show("before removing cannot access")
             show("var:string_response")
             string_response = string_response.replace(/.+cannot access.+\s/g,"")
@@ -1084,89 +1191,7 @@ function TryToSelectBracketPlaceHolder()
             
         }
 
-// when submitted 
-$('form.chat input[type="submit"]').click(function(event) {
-    event.preventDefault()
 
-    // get the user's command 
-    var original_message  = message_input_Element.value;
-    // if there was input in the text box 
-    if (message_input_Element.value.length > 0 || !(message_input_Element.value == null)) 
-        {
-
-            // if empty or only whitespace input then dont do anything
-            if (original_message.length == 0 || (original_message.match(/^\s+$/) != null))
-                {
-                    // get rid of whitespace if there was any 
-                    message_input_Element.value = "" 
-                    return
-                }
-                
-            // Handle command_history
-                // add the new command 
-                command_history.push(original_message)
-                // reset the command_history_index so that its 
-                // the last element in the history
-                command_history_index = command_history.length 
-
-            // get the time and date
-            // TODO, add am/pm instead of 24 hour time
-            var d = new Date();
-            var clock = d.getHours() + ":" + (('' + d.getMinutes).length < 2 ? '0' : '') + d.getMinutes() + ":" + (('' + d.getSeconds).length < 2 ? '0' : '') + d.getSeconds();
-            var month = d.getMonth() + 1;
-            var day = d.getDate();
-            var currentDate =
-                (('' + month).length < 2 ? '0' : '') + month + '/' +
-                (('' + day).length < 2 ? '0' : '') + day + '/' +
-                d.getFullYear() + '&nbsp;&nbsp;' + clock;
-            
-            // create the user's command
-            // FIXME, swap \n for break-statements 
-            
-            // only show non-passwords
-            if (message_input_Element.type != "password")
-                {
-                    $('form.chat div.messages').append('<div class="message"><div class="myMessage"><p>' + original_message + '</p><date><b>You </b>' + currentDate + '</date></div></div>');
-                }
-            
-            
-            // create the progress/loading bar at the top
-            setTimeout(function() {    $('form.chat > span').addClass('spinner')    }, 100 )
-            setTimeout(function() {    $('form.chat > span').removeClass('spinner') }, 2000)
-            
-            // reset the placeholder text 
-            // FIXME, give a placeholder 
-            shadowText.value = ''
-        }
-    // get rid of the text in the input field 
-    message_input_Element.value = ""
-    
-    // Scroll down when the new message_ is made
-    var focusBottom = document.getElementById("main_container")
-    focusBottom.scrollTop = focusBottom.scrollHeight
-    
-    // reset the shadowText.value
-    shadowText.value = message_input_Element.value
-    command_prefix_shown = false
-    should_suggest_folders = false 
-    shadowText.value = ""
-    
-    // give Reby the message_
-    // CHANGED
-    RebyResponse(original_message)
-    })
-
-
-
-
-
-
-// initial_checks is a list of functions that should return either a response-function or null
-initial_checks = []
-// RESPONSE_FUNCTIONS will contain the next response reby should give
-RESPONSE_FUNCTIONS = []
-// list of starts 
-command_prefixes = []
 // this is the reby command class 
 RebyCommand = function(input_ = {prefix:"", initial_check:async function(the_command){},responses:{}})
     {
@@ -1193,89 +1218,89 @@ whereami_Command             = new RebyCommand({prefix:"where am i"             
         }
     })
 showstuff_Command            = new RebyCommand({prefix:"show stuff"              ,
-        initial_check : async function(the_command)
-            {
-                //console.log("checking:",the_command)
-                if (the_command.match(/^show stuff */i))
-                    {
-                        //console.log("about to show stuff");
-                        return async function(message_)
-                            {
-                                //console.log("running show stuff")
-                                reby.says("Okay! Here's all the folders/files at your current location:\n\n" + await FilesAndFoldersReadable())
-                                //console.log("just showed stuff")
-                                reby.suggestions = [ "go to [folder]", "show files", "show hidden stuff", "create folder [folder's name]", "delete [file or folder]" , "rename [file or folder]", "move [file or folder]", "copy [file or folder]", "create file [file's name]", "who owns [file or folder]", "show permissions for [file or folder]" ]
-                            }
-                    }
-            }
+    initial_check : async function(the_command)
+        {
+            //console.log("checking:",the_command)
+            if (the_command.match(/^show stuff */i))
+                {
+                    //console.log("about to show stuff");
+                    return async function(message_)
+                        {
+                            //console.log("running show stuff")
+                            reby.says("Okay!\nHere's all the folders/files \nat your current location:\n\n" + await FilesAndFoldersReadable(),false,true)
+                            //console.log("just showed stuff")
+                            reby.suggestions = [ "go to [folder]", "show files", "show hidden stuff", "create folder [folder's name]", "delete [file or folder]" , "rename [file or folder]", "move [file or folder]", "copy [file or folder]", "create file [file's name]", "who owns [file or folder]", "show permissions for [file or folder]" ]
+                        }
+                }
+        }
     })
 showfiles_Command            = new RebyCommand({prefix:"show files"              ,
-        initial_check : async function(the_command)
-            {
-                if (the_command.match(/^show files */i))
-                    {
-                        return async function(message_)
-                            {
-                                reby.says("Here they are:\n\n" + await FilesAsString())
-                                reby.suggestions = [ "move [file or folder]", "delete [file or folder]" , "show hidden files", "rename [file or folder]", "open [file] with [app]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
-                            }
-                    }
-            }
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^show files */i))
+                {
+                    return async function(message_)
+                        {
+                            reby.says("Here they are:\n\n" + await FilesAsString(),false,true)
+                            reby.suggestions = [ "move [file or folder]", "delete [file or folder]" , "show hidden files", "rename [file or folder]", "open [file] with [app]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
+                        }
+                }
+        }
     })
 showfolders_Command          = new RebyCommand({prefix:"show folders"            ,
-        initial_check : async function(the_command)
-            {
-                if (the_command.match(/^show folders */i))
-                    {
-                        return async function(message_)
-                            {
-                                reby.says("Here they are:\n\n" + await FoldersAsString())
-                                reby.suggestions = [ "go to [folder]", "show hidden folders", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
-                            }
-                    }
-            }
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^show folders */i))
+                {
+                    return async function(message_)
+                        {
+                            reby.says("Here they are:\n\n" + await FoldersAsString(),false,true)
+                            reby.suggestions = [ "go to [folder]", "show hidden folders", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
+                        }
+                }
+        }
     })
 showhiddenstuff_Command      = new RebyCommand({prefix:"show hidden stuff"       ,
-        initial_check : async function(the_command)
-            {
-                if (the_command.match(/^show hidden stuff */i))
-                    {
-                        return async function(message_)
-                            {
-                                // display the output 
-                                reby.says("No problem, here's all the hidden folders/files at your current location:\n\n" + await HiddenFilesAndFoldersReadable())
-                                // #REBY FYI
-                                reby.says("Just FYI, hidden things start with a period .\nSo if you want to make a hidden folder\nJust make a normal folder with a period at the begining")
-                                reby.suggestions = [ "go to [folder]", "create folder [folder's name]", "delete [file or folder]" , "rename [file or folder]", "move [file or folder]", "copy [file or folder]", "create file [file's name]", "who owns [file or folder]", "show permissions for [file or folder]" ]
-                            }
-                    }
-            }
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^show hidden stuff */i))
+                {
+                    return async function(message_)
+                        {
+                            // display the output 
+                            reby.says("No problem, here's all the hidden folders/files \nat your current location:\n\n" + await HiddenFilesAndFoldersReadable(),false,true)
+                            // #REBY FYI
+                            reby.says("Just FYI, hidden things start with a period .\nSo if you want to make a hidden folder\nJust make a normal folder with a period at the begining")
+                            reby.suggestions = [ "go to [folder]", "create folder [folder's name]", "delete [file or folder]" , "rename [file or folder]", "move [file or folder]", "copy [file or folder]", "create file [file's name]", "who owns [file or folder]", "show permissions for [file or folder]" ]
+                        }
+                }
+        }
     })
 showhiddenfiles_Command      = new RebyCommand({prefix:"show hidden files"       ,
-        initial_check : async function(the_command)
-            {
-                if (the_command.match(/^show hidden files */i))
-                    {
-                        return async function(message_)
-                            {
-                                reby.says("Here they are:\n\n" + await HiddenFilesAsString())
-                                reby.suggestions = [ "open [file] with [app]", "move [file or folder]", "delete [file or folder]", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
-                            }
-                    }
-            }
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^show hidden files */i))
+                {
+                    return async function(message_)
+                        {
+                            reby.says("Here they are:\n\n" + await HiddenFilesAsString())
+                            reby.suggestions = [ "open [file] with [app]", "move [file or folder]", "delete [file or folder]", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
+                        }
+                }
+        }
     })
 showhiddenfolders_Command    = new RebyCommand({prefix:"show hidden folders"     ,
-        initial_check : async function(the_command)
-            {
-                if (the_command.match(/^show hidden folders */i))
-                    {
-                        return async function(message_)
-                            {
-                                reby.says("Here they are:\n\n" + await HiddenFoldersAsString())
-                                reby.suggestions = [ "go to [folder]", "show hidden folders", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
-                            }
-                    }
-            }
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^show hidden folders */i))
+                {
+                    return async function(message_)
+                        {
+                            reby.says("Here they are:\n\n" + await HiddenFoldersAsString())
+                            reby.suggestions = [ "go to [folder]", "show hidden folders", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
+                        }
+                }
+        }
     })
 goto_Command                 = new RebyCommand({prefix:"go to "                  ,
     initial_check: function(the_command)
@@ -1300,7 +1325,7 @@ goto_Command                 = new RebyCommand({prefix:"go to "                 
                                         // change to the new location and then record it
                                         location_history.push(await BashRun("cd "+Escape(a_location)+";pwd")) 
                                         // show stuff from the new location 
-                                        reby.says("Okay, here's the new location's stuff:\n\n" + await FilesAndFoldersReadable())
+                                        reby.says("Okay\nHere's what is at th new location:\n\n" + await FilesAndFoldersReadable(),false,true)
                                     }
                                 // if the location isn't a folder 
                                 else 
@@ -1333,7 +1358,7 @@ goback_Command               = new RebyCommand({prefix:"go back"                
                                     location_history.pop()
                                     // change directory to the new location
                                     await BashRun('cd '+Escape(await CurrentLocation()))
-                                    reby.says("Okay, here's the new location's files:\n\n" + await FilesAndFoldersReadable())
+                                    reby.says("Okay\nHere's the new location's files:\n\n" + await FilesAndFoldersReadable(),false,true)
                                 }
                             else 
                                 {
@@ -1359,7 +1384,7 @@ goup_Command                 = new RebyCommand({prefix:"go up"                  
                             // go up, then put the new directory in the location history
                             location_history.push(await BashRun('cd ..;pwd'))
                             // FIXME, handle escaping of things
-                            reby.says( "Okay, here's the new location's files:\n\n" + await FilesAndFoldersReadable() )
+                            reby.says( "Okay\nHere's the new location's files:\n\n" + await FilesAndFoldersReadable(),false,true)
                             reby.suggestions = ["go to [folder]","where am I?","show hidden stuff","go home", "open [file or folder]"]
                         }
 
@@ -1378,7 +1403,7 @@ gohome_Command               = new RebyCommand({prefix:"go home"                
                                 // location_history 
                             
                             location_history.push(await BashRun("cd ;pwd"))
-                            reby.says( "In your home folder you've got:\n\n" + await FilesAndFoldersReadable() )
+                            reby.says( "In your home folder you've got:\n\n" + await FilesAndFoldersReadable() ,false,true)
                             reby.suggestions = ["go back","go to [folder]","go up","show hidden stuff", "open [file or folder]"]
                         }
                 }
@@ -1569,7 +1594,7 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     // the message_ should be an answer to "Whose permissions would you like to change?"
                     // FIXME, this needs to be more restricted
                     // FIXME, there needs to be an "everyone" and an "everyone else"
-                         if (message_.search(/owner/   ) != -1) { message_ = "the owner"; changepermissionsfor_Command.which_level_char = 'u' }
+                        if (message_.search(/owner/   ) != -1) { message_ = "the owner"; changepermissionsfor_Command.which_level_char = 'u' }
                     else if (message_.search(/group/   ) != -1) { message_ = "the group"; changepermissionsfor_Command.which_level_char = 'g' }
                     else if (message_.search(/everyone/) != -1) { message_ = "everyone" ; changepermissionsfor_Command.which_level_char = 'o' }
                     
@@ -2113,7 +2138,7 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                             if (server_response.length > 0)
                                 {
                                     reby.says("Here is what the server said when you connected")
-                                    reby.says(Indent(server_response))
+                                    reby.says(Indent(server_response+'\n'+output_after_login.replace(/you_can_ignore_this\n/g,"")))
                                     bash_response = ""
                                 }
                         }
@@ -2147,13 +2172,13 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
 
 
 
-    
+
 // End of RebyCommands
 async function RebyResponse(a_command)
     {
         // console.log("about to do reby's response");
         // reset reby's suggestions before each response
-        reby.suggestions      = []
+        reby.suggestions = []
         reby.suggestion_index = 0
         
         // if there are no commands ready to run
@@ -2201,6 +2226,3 @@ async function RebyResponse(a_command)
         // main files and folders
         all_file_suggestions = (await BashRun("ls -1 -a /|sed 's/^/\\//';ls -1 -a")).split("\n")
     }
-
-
-
