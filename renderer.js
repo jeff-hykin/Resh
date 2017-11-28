@@ -1627,6 +1627,23 @@ createfile_Command           = new RebyCommand({prefix:"create file "           
                             reby.says("Finished")
                             reby.suggestions = [ "change permissions for "+a_location, "show permissions for "+a_location , "show files","show hidden files", "open [file or folder]"]
                         }
+sizeof_Command               = new RebyCommand({prefix:"size of ",
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^(what is the|what'?s the|)size ?of +/i))
+                {
+                    return async function(message_)
+                        {
+                            a_location = message_.replace(/^(what is the|what'?s the|)size ?of +/,"")
+                            file_size = await BashRun('du -h '+Escape(a_location))
+                            file_size = file_size.replace(/\s*(\d+(?:\.\d+|)\w\w?)\s*.+\n/,"$1")
+                            // FIXME, replace K with kilobytes, and Gb with giga bytes etc 
+                            reby.says("That is "+file_size+" large")
+                            reby.suggestions = [ "change permissions for "+a_location, "show permissions for "+a_location , "show files","show hidden files", "open [file or folder]"]
+                        }
+                }
+        }
+    })
                 }
         }
     })
