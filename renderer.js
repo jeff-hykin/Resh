@@ -336,14 +336,38 @@
                 }
         }
     // indents a string by adding 4 spaces to every line
-    function Indent(string_)
+    function Indent(string_) { return '    ' + string_.replace(/\n/g,"\n    ") }
+    function CurrentTime()   { return new Date().getTime() }
+    function show(...things)
         {
-            return '    ' + string_.replace(/\n/g,"\n    ")
+            // if the first input is a string, and there is only 1 input
+            if (typeof(things[0]) == "string" && things.length == 1)
+                {
+                    // if the input starts with "var:"
+                    if (things[0].search(/^var:.+$/) > -1)
+                        {
+                            variable_name = things[0].slice(4)
+                            
+                            output_after_indent = eval('(`${'+variable_name+'}`).replace(/\\n/g,"\\n    ")')
+                            // if the variable's data contains no newlines, then output it on the same line
+                            if (output_after_indent.search(/\n/) == -1)
+                                {
+                                    console.log(variable_name+":",output_after_indent)
+                                }
+                            // if the output does contain newlines, then put it on a seperate line 
+                            else 
+                                {
+                                    console.log(variable_name,":\n",output_after_indent)
+                                }
+                            // end the function 
+                            return
+                        }
+                }
+            // put things on the console whether or not they're being called from html
+            console.log.apply(this, things)
         }
-    function CurrentTime()
-        {
-            return new Date().getTime()
-        }
+    
+
     //   
     // NEW BASH helper functions, 
     //
@@ -386,7 +410,9 @@
         })
     bash_process.stderr.on('data', (data) => 
         {
-            reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
+            aggregated_bash_response += `${data}`
+            console.log("current stderr aggregated response:\n",Indent(aggregated_bash_response))
+            //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
         })
     // Core Bash command methods
     async function BashRun(command_)
@@ -404,16 +430,24 @@
             end_of_bash_response_was_found = false
             return answer
         }
-    async function BashRunWithoutCheck(command_)
+    async function BashRunAndCheck(command_,key_regex)
         {
             // send the command
             bash_process.stdin.write(command_+"\n")
-            // wait for 200 miliseconds, then check if bash has responded
-            a = await timer_for(1000)
+            // wait for 1000 miliseconds, then check if bash has responded
+            while (aggregated_bash_response.search(key_regex)==-1) 
+                {
+                    a = await timer_for(200)
+                }
             
+            // remove the info from the aggregated_bash_response
+            aggregated_bash_response = aggregated_bash_response.replace(key_regex,"") 
+            
+            show("output of BashRunAndCheck is:")
+            show("var:aggregated_bash_response")
             // once a response is given, reset the variables, and return the response
-            answer = bash_response
-            bash_response = ""
+            answer                         = aggregated_bash_response
+            aggregated_bash_response       = ""
             end_of_bash_response_was_found = false
             return answer
         }
@@ -2019,8 +2053,14 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                     // FIXME, escape 's in password
                     console.log("username:",serverconnect_Command.username)
                     console.log("servername:",serverconnect_Command.server_name)
+                    
+                    ssh_login_string = `/usr/local/bin/sshpass -p${message_} ssh ${serverconnect_Command.username}@${serverconnect_Command.server_name}`
+                    response_checker = /Pseudo-terminal will not be allocated because stdin is not a terminal\.\s+(?=.)/g
+
                     // FIXME, make sure sshpass is installed 
-                    server_response = await BashRunWithoutCheck("/usr/local/bin/sshpass -p"+message_+" ssh "+ serverconnect_Command.username + "@" +serverconnect_Command.server_name)
+                    // FIXME, what about when first connecting (getting a new ssh fingerprint / cant verify server )
+                    console.log("ssh login string:",ssh_login_string)
+                    server_response = await BashRunAndCheck(ssh_login_string,response_checker)
                     // reby_ssh_mode_active = true
                         // serverconnect_Command.server_name,
                         // serverconnect_Command.username,
@@ -2051,7 +2091,7 @@ async function RebyResponse(a_command)
     {
         // console.log("about to do reby's response");
         // reset reby's suggestions before each response
-        reby.suggestions = []
+        reby.suggestions      = []
         reby.suggestion_index = 0
         
         // if there are no commands ready to run
