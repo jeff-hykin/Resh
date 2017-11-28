@@ -422,7 +422,16 @@
             console.log("The ending key is ",bash_end_string)
             bash_process.stdin.write(`${command_}\necho ${bash_end_string}\n`)
             // wait for 200 miliseconds, then check if bash has responded
-            while (!end_of_bash_response_was_found) { a = await timer_for(100)  }
+            loop_num = 0
+            while (!end_of_bash_response_was_found) 
+                { 
+                    loop_num += 1
+                    a = await timer_for(100)
+                    if (loop_num > 100)
+                        {
+                            show("BashRun is probabaly in an infinite loop",loop_num)
+                        }
+                }
             
             // once a response is given, reset the variables, and return the response
             answer = bash_response
@@ -434,10 +443,16 @@
         {
             // send the command
             bash_process.stdin.write(command_+"\n")
-            // wait for 1000 miliseconds, then check if bash has responded
+            // wait for 200 miliseconds, then check if bash has responded
+            loop_num = 0
             while (aggregated_bash_response.search(key_regex)==-1) 
                 {
+                    loop_num += 1
                     a = await timer_for(200)
+                    if (loop_num > 100)
+                        {
+                            show("BashRunAndCheck is probabaly in an infinite loop",loop_num)
+                        }
                 }
             
             // remove the info from the aggregated_bash_response
@@ -998,7 +1013,11 @@ function TryToSelectBracketPlaceHolder()
             // then only shows the folders             : (grep "/$")
             // gets rid of the trailing /'s            : .replace(/\/(\n|$)/g,"\n")
             string_response = await BashRun('ls -L -p -1 | grep "/$" ')
-            console.log("the string response was:",string_response)
+            show("before removing cannot access")
+            show("var:string_response")
+            string_response = string_response.replace(/.+cannot access.+\s/g,"")
+            show("after removing cannot access")
+            show("var:string_response")
             return string_response.replace(/\/(\n|$)/g,"\n")
         }
     // returns a string-list of files kind of like ls -1
@@ -1006,7 +1025,13 @@ function TryToSelectBracketPlaceHolder()
         {
             // this lists files and  folders           : (ls -L -p -1 )
             // then only shows the files               : (grep -v "/$")
-            return await BashRun('ls -L -p -1 | grep -v "/$" ')
+            string_response = await BashRun('ls -L -p -1 | grep "/$" ')
+            show("before removing cannot access")
+            show("var:string_response")
+            string_response = string_response.replace(/.+cannot access.+\s/g,"")
+            show("after removing cannot access")
+            show("var:string_response")
+            return string_response
         }
     // returns a string-list of only hidden folders kind of like ls -1 
     async function HiddenFoldersAsString(the_location)
@@ -1399,9 +1424,9 @@ whatsmyip_Command            = new RebyCommand({prefix:"whats my ip"            
                             // FIXME, this command takes awhile, so give a warning or fix that 
                             if (await IsWifiConnected())
                                 {
-                                    reby.says("You have two main ip addresses"+
-                                    "\nLocal: " +await BashRun("ipconfig getifaddr en0")+
-                                    "\nPublic: "+await BashRun("curl -s http://checkip.dyndns.org/ | sed 's/[a-zA-Z<>/ :]//g'"))
+                                    reby.says("You have two main ip addresses")
+                                    reby.says("Local: " +await BashRun("ipconfig getifaddr en0"))
+                                    reby.says("Public: "+await BashRun("curl -s http://checkip.dyndns.org/ | sed 's/[a-zA-Z<>/ :]//g'"))
                                 }
                             else 
                                 {
@@ -2029,7 +2054,7 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                             delete serverconnect_Command.server_name
                             return null
                         }
-                    else 
+                    else
                         {
                             // get rid of trailing and leading whitespace
                             serverconnect_Command.username = message_.replace(/^ *(.+) *$/,"$1")
@@ -2042,6 +2067,12 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                 },
             answerPasswordRunConnection : async function(message_)
                 {
+                    
+                    
+                    // get rid of any whitespace quotes and/or ;'s
+                    // FIXME, make sure this is the only thing i need to get rid of
+                    message_ = message_.replace(/[\s\'\";]+/g,"")
+                    
                     // FIXME, what should be done in the case of a blank password?
 
                     // convert the input box from password-input back to message input 
@@ -2066,18 +2097,49 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                         // serverconnect_Command.username,
                         // message_
                     
-                    // add the home directory location 
-                    //location_history.push(ssh_home_dir)
-                    //reby.says("The server says you're at "+ssh_home_dir)
-                    reby.says("Okay, I think you're connected")
-                    if (server_response.length > 0)
+                    // wait for half a second and see if the password was wrong
+                    output_after_login = await BashRun("echo you_can_ignore_this")
+                    if (output_after_login.search(/Permission denied, please try again/g) > -1)
                         {
-                            reby.says("Here is what the server said when you connected")
-                            reby.says(Indent(server_response+bash_response))
-                            bash_response = ""
+                            reby.says("Okay, I connected with the server but it says you have the wrong password")
+                            reby.says("Want to try again?")
+                            reby.suggestions = [ 'Yes' , 'No' ]
+                            return serverconnect_Command.responses.answerShouldTryAnotherPassword
                         }
-                        
+                    else 
+                        {
+                            //reby.says("The server says you're at "+ssh_home_dir)
+                            reby.says("Okay, I think you're connected")
+                            if (server_response.length > 0)
+                                {
+                                    reby.says("Here is what the server said when you connected")
+                                    reby.says(Indent(server_response))
+                                    bash_response = ""
+                                }
+                        }
+
+
                     // FIXME, do something with the username/server_name/password data!
+                },
+            answerShouldTryAnotherPassword : async function(message_)
+                {
+                    // if the
+                    if (ParseYesOrNo(message_))
+                        {
+                            reby.says("Okay, you can try to enter the password again")
+                            // dont show the text (only show password-dots)
+                            message_input_Element.type = "password"
+                            return serverconnect_Command.responses.answerPasswordRunConnection
+                        }
+                    else
+                        {
+                            reby.says("Okay")
+                            reby.says("In the file system, you're now at:\n"+ await BashRun("pwd"))
+                            // delete the leftover data
+                            delete serverconnect_Command.connection_method
+                            delete serverconnect_Command.server_name
+                            return null
+                        }
                 }
         }
     })
