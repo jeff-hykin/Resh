@@ -1,6 +1,6 @@
 // requirements 
 const { app , BrowserWindow , Menu } = require('electron')
-//require('electron-debug')({showDevTools: true});
+require('electron-debug')({showDevTools: true});
 var $      = require('jQuery')
 const path = require('path')
 

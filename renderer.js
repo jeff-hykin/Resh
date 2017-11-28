@@ -225,21 +225,24 @@
                           (('' + day).length < 2 ? '0' : '') + day + '/' +
                           d.getFullYear() + '&nbsp;&nbsp;' + clock;
                         
+                        number_of_newlines = (message_.match(/\n/g) || []).length
+
+                        // options for the message
+                        scroll_vertically_part_1 = 
+                        scroll_vertically_part_2 = ""
+                        font_class        = ""
+                        if (number_of_newlines>50) { scroll_vertically_part_2 = ' class="Scrollable" ' }
+                        if (monospaced_font)       { font_class               = ' class="monospaced" ' }
                         
+
+                        // Escape HTML, FIXME this is currently only escaping newlines
                         // replace newlines with \n
                         message_ = message_.replace(/\n/g,"<br>")
                         
                         // FIXME, check for accidental html-escape sequences 
                         
                         // create Reby's response
-                        if (monospaced_font)
-                            {
-                                $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p class="monospaced">' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>');
-                            }
-                        else 
-                            {
-                                $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>');
-                            }
+                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"'+scroll_vertically_part_1+'><p'+font_class+scroll_vertically_part_2+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
                         
                         // Scroll down when the new message_ is made
                         var focusBottom = document.getElementById("main_container")
@@ -363,7 +366,7 @@
     bash_process.stdout.on('data', (data) => 
         {
             aggregated_bash_response += `${data}` // converts the data buffer into a string
-            console.log("the current aggregared response is ", aggregated_bash_response)
+            console.log("the current aggregated response is ", aggregated_bash_response)
             end_regex = new RegExp(bash_end_string )
             if (aggregated_bash_response.search(end_regex) > -1)
                 {
@@ -406,15 +409,12 @@
             // send the command
             bash_process.stdin.write(command_+"\n")
             // wait for 200 miliseconds, then check if bash has responded
-            reby.says("Start of BashRunWithoutCheck ")
             a = await timer_for(1000)
-            reby.says("Start of bash wait ")
             
             // once a response is given, reset the variables, and return the response
             answer = bash_response
             bash_response = ""
             end_of_bash_response_was_found = false
-            reby.says("End of BashRunWithoutCheck ")
             return answer
         }
     
@@ -461,6 +461,42 @@ function TryToSelectBracketPlaceHolder()
     }
 
 // Event-driven functions 
+    // this fixes some annoying scrolling stuff 
+    $(document).on('DOMMouseScroll mousewheel', '.Scrollable', function(ev) 
+        {
+            // I got this function from  http://jsfiddle.net/4wrxq/272/
+            // to make this work there is also a "Scrollable" class in the CSS
+            // and the thing you dont want to scroll needs the CSS overflow: hidden attribute
+            var $this        = $(this),
+                scrollTop    = this.scrollTop,
+                scrollHeight = this.scrollHeight,
+                height       = $this.innerHeight(),
+                delta = (ev.type == 'DOMMouseScroll' ?
+                    ev.originalEvent.detail * -40 :
+                    ev.originalEvent.wheelDelta),
+                up = delta > 0
+        
+            var prevent = function() 
+                {
+                    ev.stopPropagation()
+                    ev.preventDefault()
+                    ev.returnValue = false
+                    return false
+                }
+        
+            if (!up && -delta > scrollHeight - height - scrollTop) 
+                {
+                    // Scrolling down, but this will take us past the bottom.
+                    $this.scrollTop(scrollHeight)
+                    return prevent()
+                } 
+            else if (up && delta > scrollTop) 
+                {
+                    // Scrolling up, but this will take us past the top.
+                    $this.scrollTop(0)
+                    return prevent()
+                }
+        })
     // When enter is pressed, then simulate clicking submit 
         $("input").keypress(function(event) 
             {
