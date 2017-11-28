@@ -22,55 +22,61 @@
                         // if user typed "where am i" then the reponse function
                         // generates a GUI message "You are at " + Bash("pwd") 
         // wait for next user input_
+        //
+        // I got this original interface from https://codepen.io/adobewordpress/pen/wGGMaV
+        // I reworked it and added functionality, but thats what I originally started with 
 
-// TODO, add a server disconnect method 
-// TODO, add all the standard shortcuts (quit, minimize, etc)
-// FIXME, go back is broken
-// TODO, clean up all the global bash variables into one object 
-// TODO, get rid of the little message bubble tails 
-// FIXME, add error messages for things that don't work in ssh (like opening a file)
-// TODO, make scripting possible
-// FIXME, make the x button actually quit the program
-// TODO, fix up the graphics of the message_ bubbles
-// TODO, add help messages for each of the commands
-// FIXME, add more error handling (especially for sudo)
-// FIXME, keep track of hidden/accidental directory changes (like using cd or running a script)
-// FIXME, figure out how to handle aliases (right now they're considered a file and cant be followed)
-// TODO, fix the 'everyone in wheel can:' make it skip if it's wheel 
-// TODO, take away title bar with BrowserWindow({titleBarStyle: 'hiddenInset'}); and then make a titlebar div and in sass set -webkit-app-region: drag
-// TODO, change hover to not move the element down 
-// TODO, allow different behavior for different suggestions
-    // ex: if the suggestion-command doesn't need any arguemnts, then clicking it runs it instantly 
-    // ex: allow one-off suggestions like "Why?" that can be used when a command doesn't work 
-// TODO, create a log of how many times the user has used each command
-// TODO, throughout the usage of the app, quiz the user to figure out how much computer science they know 
-// TODO, check for files/folders that have leading-whitespace, trailing-whitespace, or whose names are only whitespace
-// TODO, implement suggestions in th touchbar for mac 
-// TODO, make sure nothing seems illogical for the user due to symbolic links always being followed
-// TODO, figure out how to make a grid/table in html, then use that for show stuff with info
-// TODO, make reby's messages side scroll instead of wrap 
-// FIXME, text box can't paste in electron once built into app. solution: https://pracucci.com/atom-electron-enable-copy-and-paste.html
-// FIXME, issues with unlocking files (ex: Unable to change file mode on CekoLibrary.h: Operation not permitted)
-// TODO, vertical scrolling/scroll bar in suggestions box
-// TODO, improve tab suggestions:
-        // figure out a solution for multi-input commands (open _ with _)
-        // pick when to 
-// FIXME, even for regular input like program names or usernames, make sure they don't contain ;'s
-// FIXME, add a suggestion for 'disconnect from server'
-// FIXME, how to handle going home and other dir commands in ssh
-// I got this original interface from https://codepen.io/adobewordpress/pen/wGGMaV
-// I reworked it and added functionality, but thats what I originally started with 
-
-
-
-
-
-
-// TODO  features/commands/phrases:
+// Stuff that needs to be done
+    // FIXME, figure out how to handle continuously updating bash output (ex: top)
+    // TODO, add a server disconnect method 
+    // TODO, clean up all the global bash variables into one object 
+    // FIXME, go back is broken
+    // FIXME, create a timeout for the bash commands, especially ssh 
+    // TODO, make scripting possible
+    // TODO, add all the standard shortcuts (quit, minimize, etc)
+    // TODO, get rid of the little message bubble tails 
+    // FIXME, add error messages for things that don't work in ssh (like opening a file)
+    // FIXME, add more error handling (especially for sudo)
+    // FIXME, keep track of hidden/accidental directory changes (like using cd or running a script)
+    // TODO, add animation for messages being sent
+    // TODO, maybe add help messages for each of the commands
+    // FIXME, figure out how to handle aliases (right now they're considered a file and cant be followed)
+    // FIXME, figure out how to show apps (and other 'files' that are actually folders) in an intuitive way
+    // TODO, fix the 'everyone in wheel can:' make it skip if it's wheel 
+    // TODO, take away title bar with BrowserWindow({titleBarStyle: 'hiddenInset'}); and then make a titlebar div and in CSS set -webkit-app-region: drag
+    // TODO, allow different behavior for different suggestions
+        // ex: if the suggestion-command doesn't need any arguemnts, then clicking it runs it instantly 
+        // ex: allow one-off suggestions like "Why?" that can be used when a command doesn't work 
+    // TODO, create a log of how many times the user has used each command
+    // TODO, throughout the usage of the app, quiz the user to figure out how much computer science they know 
+    // TODO, check for files/folders that have leading-whitespace, trailing-whitespace, or whose names are only whitespace
+    // TODO, implement suggestions in the touchbar for mac 
+    // TODO, make sure nothing seems illogical for the user due to symbolic links always being followed
+    // TODO, figure out how to make a grid/table in html, then use that for show stuff with info
+    // TODO, make reby's messages side scroll instead of wrap 
+    // TODO, make large output (>~50 lines) scroll vertically instead of just being a giant message
+    // FIXME, issues with unlocking files (ex: Unable to change file mode on CekoLibrary.h: Operation not permitted)
+    // FIXME, you can vertically scroll in the suggestions box (you shouldn't be able to)
+    // TODO, improve tab suggestions:
+            // figure out a solution for multi-input commands (open _ with _)
+            // alternate between file suggestions as you type (if one is a longer version than another)
+    // FIXME, even for regular input like program names or usernames, make sure they don't contain ;'s
+    // FIXME, handle going home in ssh
+    //
+    // DONE!, make the x button actually quit the program
+    // DONE!, change hover to not move the element down 
+    // DONE!, text box can't paste in electron once built into app. 
+    //
+    //
+    // TODO  features/commands/phrases:
     //   // core language
+    //   go forwards
+    //   change owner of 
+    //   give __user permission to __ __files
+    //   *make sure sudo is called when needed
+    //   whats running (top)
     //   DONE, go to
     //   DONE, go back
-    //   go forwards
     //   DONE, go up
     //   DONE, where am i (pwd)
     //   DONE, who am i (whoami)
@@ -88,10 +94,6 @@
     //   DONE, who owns
     //   DONE, show permissions for __file
     //   DONE, change permissions for 
-    //   change owner of 
-    //   give __user permission to __ __files
-    //   *make sure sudo is called when needed
-    //   whats running (top)
     //   DONE, open
     //   DONE, open with
     //   show more details
@@ -105,7 +107,7 @@
     //   DONE, rename
     //   DONE, new folder
     //   *have a hidden method for dealing with lots of output
-    //   find (builds in grep)
+    //   find (built in grep)
     //   help
     //   exit
     //   *evaluates math */+-% ^ etc
@@ -123,6 +125,7 @@
     //   show current custom command
     //   create custom command
     //   create "I know" responses to messages to stop them from happening
+    //   delay (do a command after waiting)
     //
     //
     //   // advanced
@@ -377,21 +380,7 @@
         })
     bash_process.stderr.on('data', (data) => 
         {
-            // FIXME, have bash errors handled better
-            bash_response += `${data}` // converts the data buffer into a string
-            console.log("bash callback data:\n",Indent(bash_response))
-            if (bash_response.search(/end\n$/) > -1)
-                {
-                    // remove the start and end from the message
-                    bash_response = bash_response.replace(/^start\n/,"")
-                    bash_response = bash_response.replace(/(\n|)end\n$/,"")
-                    // let BashRun() know that the response is ready
-                    end_of_bash_response_was_found = true
-                }
-            else 
-                {
-                    console.log("bash response didn't contain all output in 1-go")
-                }
+            reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
         })
     // Core Bash command methods
     async function BashRun(command_)
@@ -414,12 +403,15 @@
             // send the command
             bash_process.stdin.write(command_+"\n")
             // wait for 200 miliseconds, then check if bash has responded
-            while (bash_response.length <= 0) { a = await timer_for(1000)  }
+            reby.says("Start of BashRunWithoutCheck ")
+            a = await timer_for(1000)
+            reby.says("Start of bash wait ")
             
             // once a response is given, reset the variables, and return the response
             answer = bash_response
             bash_response = ""
             end_of_bash_response_was_found = false
+            reby.says("End of BashRunWithoutCheck ")
             return answer
         }
     
@@ -1876,7 +1868,6 @@ copy_Command                 = new RebyCommand({prefix:"copy "                  
         }
     })
 serverconnect_Command        = new RebyCommand({prefix:"connect to a server"     ,
-
     initial_check : async function(the_command)
         {
             if (the_command.match(/^connect to a server */i))
@@ -1972,7 +1963,8 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                     // FIXME, escape 's in password
                     console.log("username:",serverconnect_Command.username)
                     console.log("servername:",serverconnect_Command.server_name)
-                    server_response = await BashRunWithoutCheck("sshpass -p"+message_+" ssh -o StrictHostKeyChecking=no "+ serverconnect_Command.username + "@" +serverconnect_Command.server_name)
+                    // FIXME, make sure sshpass is installed 
+                    server_response = await BashRunWithoutCheck("/usr/local/bin/sshpass -p"+message_+" ssh "+ serverconnect_Command.username + "@" +serverconnect_Command.server_name)
                     // reby_ssh_mode_active = true
                         // serverconnect_Command.server_name,
                         // serverconnect_Command.username,
@@ -1981,7 +1973,7 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                     // add the home directory location 
                     //location_history.push(ssh_home_dir)
                     //reby.says("The server says you're at "+ssh_home_dir)
-                    reby.says("okay i think you're connected")
+                    reby.says("Okay, I think you're connected")
                     if (server_response.length > 0)
                         {
                             reby.says("Here is what the server said when you connected")
