@@ -1,5 +1,4 @@
 
-
 // How this program works
     // Example 
         // user types "where am i"
@@ -27,166 +26,209 @@
         // I reworked it and added functionality, but thats what I originally started with 
 
 // Stuff that needs to be done
-    // FIXME, figure out how to handle continuously updating bash output (ex: top)
-    // TODO, add a server disconnect method 
-    // TODO, clean up all the global bash variables into one object 
-    // FIXME, go back is broken
-    // FIXME, create a timeout for the bash commands, especially ssh 
-    // TODO, make scripting possible
-    // TODO, add all the standard shortcuts (quit, minimize, etc)
-    // TODO, get rid of the little message bubble tails 
-    // FIXME, add error messages for things that don't work in ssh (like opening a file)
-    // FIXME, add more error handling (especially for sudo)
-    // FIXME, keep track of hidden/accidental directory changes (like using cd or running a script)
-    // TODO, add animation for messages being sent
-    // TODO, maybe add help messages for each of the commands
-    // FIXME, figure out how to handle aliases (right now they're considered a file and cant be followed)
-    // FIXME, figure out how to show apps (and other 'files' that are actually folders) in an intuitive way
-    // TODO, fix the 'everyone in wheel can:' make it skip if it's wheel 
-    // TODO, take away title bar with BrowserWindow({titleBarStyle: 'hiddenInset'}); and then make a titlebar div and in CSS set -webkit-app-region: drag
-    // TODO, allow different behavior for different suggestions
-        // ex: if the suggestion-command doesn't need any arguemnts, then clicking it runs it instantly 
-        // ex: allow one-off suggestions like "Why?" that can be used when a command doesn't work 
-    // TODO, create a log of how many times the user has used each command
-    // TODO, throughout the usage of the app, quiz the user to figure out how much computer science they know 
-    // TODO, check for files/folders that have leading-whitespace, trailing-whitespace, or whose names are only whitespace
-    // TODO, implement suggestions in the touchbar for mac 
-    // TODO, make sure nothing seems illogical for the user due to symbolic links always being followed
-    // TODO, figure out how to make a grid/table in html, then use that for show stuff with info
-    // TODO, make reby's messages side scroll instead of wrap 
-    // TODO, make large output (>~50 lines) scroll vertically instead of just being a giant message
-    // FIXME, issues with unlocking files (ex: Unable to change file mode on CekoLibrary.h: Operation not permitted)
-    // FIXME, you can vertically scroll in the suggestions box (you shouldn't be able to)
-    // TODO, improve tab suggestions:
-            // figure out a solution for multi-input commands (open _ with _)
-            // alternate between file suggestions as you type (if one is a longer version than another)
-    // FIXME, even for regular input like program names or usernames, make sure they don't contain ;'s
-    // FIXME, handle going home in ssh
-    //
-    // DONE!, make the x button actually quit the program
-    // DONE!, change hover to not move the element down 
-    // DONE!, text box can't paste in electron once built into app. 
-    //
-    //
-    // TODO  features/commands/phrases:
-    //   // core language
-    //   search
-    //   how big is
-    //   show info for 
-    //   go forwards
-    //   change owner of 
-    //   give __user permission to __ __files
-    //   *make sure sudo is called when needed
-    //   whats running (top)
-    //   DONE, go to
-    //   DONE, go back
-    //   DONE, go up
-    //   DONE, where am i (pwd)
-    //   DONE, who am i (whoami)
-    //   DONE, who are you 
-    //   DONE, whats my ip address (ip config)
-    //   DONE, whats my mac address
-    //   DONE, whats today (date)
-    //   DONE, show stuff (ls)
-    //   DONE, show files 
-    //   DONE, show folders 
-    //   DONE, show hidden stuff (ls -a)
-    //   DONE, show hidden files
-    //   DONE, show hidden folders
-    //   DONE, show stuff and info (ls -l)
-    //   DONE, who owns
-    //   DONE, show permissions for __file
-    //   DONE, change permissions for 
-    //   DONE, open
-    //   DONE, open with
-    //   show more details
-    //   that^ / he^ / she^ / they^ (uses the pipe command)
-    //   sort by
-    //   DONE-ish, *press up to see last message_*
-    //   DONE, new file
-    //   DONE, delete (rm -i, detect if folder rm -r)
-    //   DONE, copy (cp and ditto, handles folders, handles links/alias)
-    //   DONE, move
-    //   DONE, rename
-    //   DONE, new folder
-    //   *have a hidden method for dealing with lots of output
-    //   find (built in grep)
-    //   help
-    //   exit
-    //   *evaluates math */+-% ^ etc
-    //   connect to (ssh,ftp)
-    //   literally (handles escaping, stops smart input)
-    //   run (complicated, depends on file type and whats installed)
-    //   compile (complicated, depends on file type and whats installed)
-    //   get/install (get package from homebrew)
-    //   disable protection (pulls up warning and instructions)
-    //   show processes
-    //   stop process (kill / kill all)
-    //   undo (might not be possible)
-    //   reboot
-    //   github
-    //   show current custom command
-    //   create custom command
-    //   create "I know" responses to messages to stop them from happening
-    //   delay (do a command after waiting)
-    //
-    //
-    //   // advanced
-    //   run in background "this seems to be taking awhile, would you like me to run this in the background?" , make sure to make an exception to this for things that change the input
-    //   auto make a key for ssh and other connections 
-    //   allow creation of a local website
-    //   say (speaks text out loud)
-    //   screenshot (screencapture)
-    //   find and replace (sed and others)
-    //   play (afplay for audio, something else for video)
-    //   convert (af convert for audio)
-    //   new alias (ln, shortcut, not Unix alias)
-    //   zip
-    //   unzip
-    //   compress (gzip, tar)
-    //   decompress
-    //   prevent sleep (caffinate)
-    //   compare/diff
-    //   schedule (cron)
-    //   geturl (curl)
-    //   disk utility (diskutil)
-    //   dns lookup (dig)
-    //   show groups
-    //   new variable 
-    //   show vars (env)
-    //   new function
-    //   preview (head)
-    //   new command
-    //   print (literally prints out sheets of paper)
-    //   printer info
-    //   stop printing
-    //   mount
-    //   unmount (umount)
-    //   set (set a variable to a value)
-    //   share (using ftp, afp, etc)
-    //   save ___ to a file
-    //   convert __ to __ (pdf to image, or mp4 to avi, etc)
-    //
-    //   // unaddressed
-    //   if / for / until
-    //   unset
-    //   users
-    //   wall (write message_ to users)
-    //   ifconfig
-    //   ipconfig
-    //   iostat
-    //   write (messags another user)
-    //   hostname
-    //   install
-    //   jobs
-    //   netcat / net / netstat
-    //   passwd
-    //   srm (secure remove)
-    //   tmutil (time machine commands)
-    //   trap (event programming unix)
-    //   uname
-    //   
-      
+    // Resh 1.0
+        // DONE-ish, add all the standard shortcuts (quit, minimize, etc)
+        // DONE, make the x button actually quit the program
+        // DONE, change hover to not move the element down 
+        // DONE, text box can't paste in electron once built into app. 
+        // DONE, make reby's messages side scroll instead of wrap 
+        // DONE, make large output (>~50 lines) scroll vertically instead of just being a giant message
+        // DONE, fix go back 
+        // DONE, run .bash_profile at the begining of resh to get the other paths
+        // DONE, keep track of hidden/accidental directory changes (like using cd or running a script)
+        // DONE, fix the first all_file_suggestions problem
+        // DONE, fix do up/down arrows
+        // DONE, fix shadow suggestion when a bubble suggestion is clicked
+        //
+        // add a loading sign to show that a command hasn't finished
+        // TODO-ish, get rid of the little message bubble tails 
+        // add a find command
+        // add a run command 
+        // fix the open __ with __ shadow suggestion
+        // Add sudo commands
+        // fix failure to delete 'Finances - 10.csv'
+        // figure out how to handle continuously updating bash output (ex: top)
+            // figure out piping
+            // create an internal method for updating reby's message with new text
+            // create a "cancel" command
+        // add a server disconnect command
+        // add a change owner command
+        // add a change group command
+        // FIXME, add more error handling 
+            // (especially for sudo)
+            // server problems
+        // add a download command 
+    // Resh 1.1
+        // get rid of jQuery
+        // add a find __ in __
+        // improve the find command with locate 
+        // improve the find command with Rebex
+        // improve the run command with other languages
+        // add info command
+        // TODO, figure out how to make a grid/table in html, then use that for show stuff with info
+        
+
+
+    // Resh 2.0
+        // add 'lingering responses' that are actually a full response function, but if non of the keywords match, they simply run all of the initial checks. ex: ^This 
+        // add the following arrays:
+            // whenever_there_is_free_time_do_these
+            // recently_used (files/folders)
+            // frequently_used
+            // quick_use (saved/favorites)
+            // have_used_at_least_once
+            // put_words_in_users_mouth (used for scripts)
+            // user_knows (ex user_knows "regex" , "unix", "python" , "git")
+        // have a scripts.json file
+        // allow a scripts to be run half-way by letting the user press the down key for each response 
+        // auto generate scripts if you notice a user does something frequently
+        // TODO, clean up all the global bash variables into one object 
+        // TODO, make scripting possible
+        // FIXME, add error messages for things that don't work in ssh (like opening a file)
+        // TODO, add animation for messages being sent
+        // TODO, maybe add help messages for each of the commands
+        // FIXME, figure out how to handle aliases (right now they're considered a file and cant be followed)
+        // FIXME, figure out how to show apps (and other 'files' that are actually folders) in an intuitive way
+        // TODO, fix the 'everyone in wheel can:' make it skip if it's wheel 
+        // TODO, take away title bar with BrowserWindow({titleBarStyle: 'hiddenInset'}); and then make a titlebar div and in CSS set -webkit-app-region: drag
+        // TODO, allow different behavior for different suggestions
+            // ex: if the suggestion-command doesn't need any arguemnts, then clicking it runs it instantly 
+            // ex: allow one-off suggestions like "Why?" that can be used when a command doesn't work 
+        // TODO, create a log of how many times the user has used each command
+        // TODO, throughout the usage of the app, quiz the user to figure out how much computer science they know 
+        // TODO, check for files/folders that have leading-whitespace, trailing-whitespace, or whose names are only whitespace
+        // TODO, implement suggestions in the touchbar for mac 
+        // TODO, make sure nothing seems illogical for the user due to symbolic links always being followed
+        // FIXME, issues with unlocking files (ex: Unable to change file mode on CekoLibrary.h: Operation not permitted)
+        // FIXME, you can vertically scroll in the suggestions box (you shouldn't be able to)
+        // TODO, improve tab suggestions:
+                // figure out a solution for multi-input commands (open _ with _)
+                // alternate between file suggestions as you type (if one is a longer version than another)
+        // FIXME, even for regular input like program names or usernames, make sure they don't contain ;'s
+        // FIXME, handle going home in ssh
+        // TODO, make tree method on npm better
+        //
+        //
+        //
+        // TODO  features/commands/phrases:
+        //   // core language
+        //   search
+        //   download (from server)
+        //   how big is
+        //   show info for 
+        //   go forwards
+        //   change owner of 
+        //   give __user permission to __ __files
+        //   *make sure sudo is called when needed
+        //   whats running (top)
+        //   DONE, go to
+        //   DONE, go back
+        //   DONE, go up
+        //   DONE, where am i (pwd)
+        //   DONE, who am i (whoami)
+        //   DONE, who are you 
+        //   DONE, whats my ip address (ip config)
+        //   DONE, whats my mac address
+        //   DONE, whats today (date)
+        //   DONE, show stuff (ls)
+        //   DONE, show files 
+        //   DONE, show folders 
+        //   DONE, show hidden stuff (ls -a)
+        //   DONE, show hidden files
+        //   DONE, show hidden folders
+        //   DONE, show stuff and info (ls -l)
+        //   DONE, who owns
+        //   DONE, show permissions for __file
+        //   DONE, change permissions for 
+        //   DONE, open
+        //   DONE, open with
+        //   show more details
+        //   that^ / he^ / she^ / they^ (uses the pipe command)
+        //   sort by
+        //   DONE-ish, *press up to see last message_*
+        //   DONE, new file
+        //   DONE, delete (rm -i, detect if folder rm -r)
+        //   DONE, copy (cp and ditto, handles folders, handles links/alias)
+        //   DONE, move
+        //   DONE, rename
+        //   DONE, new folder
+        //   find (built in grep)
+        //   help
+        //   exit
+        //   *evaluates math */+-% ^ etc
+        //   connect to (ssh,ftp)
+        //   literally (handles escaping, stops smart input)
+        //   run (complicated, depends on file type and whats installed)
+        //   compile (complicated, depends on file type and whats installed)
+        //   get/install (get package from homebrew, homebrew cask)
+        //   disable protection (pulls up warning and instructions)
+        //   show processes
+        //   stop process (kill / kill all)
+        //   undo (might not be possible)
+        //   reboot
+        //   github
+        //   show current custom command
+        //   create custom command
+        //   create "I know" responses to messages to stop them from happening
+        //   delay (do a command after waiting)
+        //
+        //
+        //   // advanced
+        //   run in background "this seems to be taking awhile, would you like me to run this in the background?" , make sure to make an exception to this for things that change the input
+        //   auto make a key for ssh and other connections 
+        //   allow creation of a local website
+        //   say (speaks text out loud)
+        //   screenshot (screencapture)
+        //   find and replace (sed and others)
+        //   play (afplay for audio, something else for video)
+        //   convert (af convert for audio)
+        //   new alias (ln, shortcut, not Unix alias)
+        //   zip
+        //   unzip
+        //   compress (gzip, tar)
+        //   decompress
+        //   prevent sleep (caffinate)
+        //   compare/diff
+        //   schedule (cron)
+        //   geturl (curl)
+        //   disk utility (diskutil)
+        //   dns lookup (dig)
+        //   show groups
+        //   new variable 
+        //   show vars (env)
+        //   new function
+        //   preview (head)
+        //   new command
+        //   print (literally prints out sheets of paper)
+        //   printer info
+        //   stop printing
+        //   mount
+        //   unmount (umount)
+        //   set (set a variable to a value)
+        //   share (using ftp, afp, etc)
+        //   save ___ to a file
+        //   convert __ to __ (pdf to image, or mp4 to avi, etc)
+        //
+        //   // unaddressed
+        //   if / for / until
+        //   unset
+        //   users
+        //   wall (write message_ to users)
+        //   ifconfig
+        //   ipconfig
+        //   iostat
+        //   write (messages to another user)
+        //   hostname
+        //   install
+        //   jobs
+        //   netcat / net / netstat
+        //   passwd
+        //   srm (secure remove)
+        //   tmutil (time machine commands)
+        //   trap (event programming unix)
+        //   uname
+        //   
+        
 
 
 
@@ -198,10 +240,11 @@
 // globals 
 //
     var $              = require('jQuery') 
-    const { spawn }    = require('child_process');
-    const bash_process = spawn('bash\n', { shell: true })
+    const { spawn }    = require('child_process') 
+    const { exec }     = require('child_process')
+    var bash_process = spawn('bash\n', { shell: true })
     var location_history = []
-    var command_history  = []
+    var command_history  = [""]
     var dont_run_message = false
     // for the bash commands
     var bash_end_string                = "" 
@@ -209,11 +252,13 @@
     var aggregated_bash_response       = ""
     var end_of_bash_response_was_found = false
     // for the html elements 
+    var send_button           = document.getElementById("SendButton")
     var message_input_Element = document.getElementById("messageInput")
     var shadowText            = document.getElementById("suggestionOverlay")
     var body                  = document.getElementsByClassName('body')
     var suggestion_box        = document.getElementById("suggestionBox")
     // for reby commands 
+    LAST_OUTPUT = ""
     initial_checks     = [] // initial_checks is a list of functions that should return either a response-function or null
     RESPONSE_FUNCTIONS = []// RESPONSE_FUNCTIONS will contain the next response reby should give
     command_prefixes   = [] // list of start-strings to be used for tab completion
@@ -239,13 +284,15 @@
                         number_of_newlines = (message_.match(/\n/g) || []).length
 
                         // options for the message
-                        scroll_vertically = ""
-                        font_class        = ""
-                        no_wrap           = ""
-                        console.log("dont wrap lines?",dont_wrap_lines)
-                        if (number_of_newlines>50) { scroll_vertically = ' class="Scrollable" ' }
-                        if (monospaced_font)       { font_class        = ' class="monospaced" ' }
-                        if (dont_wrap_lines)       { no_wrap           = ' style="white-space: pre;"' }
+                        font_class = ""
+                        style_     = "" 
+                        
+                        if (monospaced_font)       { font_class  += 'class="monospaced"' }
+                        if (number_of_newlines>50) { style_      += 'max-height: 400px; overflow-y: scroll;' }
+                        if (dont_wrap_lines)       { style_      += 'white-space: pre;' }
+
+                        // give style the proper CSS encasing if there is any styling
+                        if (style_.length != 0){ style_ = ` style="${style_}" ` } 
 
                         // Escape HTML, FIXME this is currently only escaping newlines
                         // replace newlines with \n
@@ -253,7 +300,7 @@
                         // FIXME, check for accidental html-escape sequences 
                         
                         // create Reby's response
-                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p'+no_wrap+font_class+scroll_vertically+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
+                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p '+font_class+style_+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
                         
                         // Scroll down when the new message_ is made
                         var focusBottom = document.getElementById("main_container")
@@ -313,8 +360,8 @@
                                         {
                                             message_input_Element.value = this.childNodes[0].innerHTML.replace(/\[.+\]/,"")
                                             // FIXME, submit the thing 
-                                            // $('form.chat input[type="submit"]').click()
                                             message_input_Element.focus()
+                                            shadowText.value = ""
                                         }
                             }
                         shadowText.value = message_input_Element.value
@@ -381,6 +428,15 @@
             // put things on the console whether or not they're being called from html
             console.log.apply(this, things)
         }
+    function uniq(an_array) 
+        {
+            // got this from https://stackoverflow.com/questions/9229645/remove-duplicate-values-from-js-array
+            seen = {}
+            return an_array.filter(function(item) 
+                {
+                    return seen.hasOwnProperty(item) ? false : (seen[item] = true)
+                })
+        }// 
 
 
 //
@@ -388,10 +444,8 @@
 //  Initilization of things 
 //
 //
-    // FIXME, all_file_suggestions doesnt work till after the first command (that is: it doesnt get populated till after RebyResponse() runs)
-    // FIXME, location_history shouldn't need to be hardcoded populated at the begining
-    location_history.push("$HOME/Desktop")
-    // add a blank command 
+
+    location_history.push(BashRun("cd ;cd Desktop;pwd"))
     command_history_index  = command_history.length -1
     command_prefix_shown   = false // FIXME command_prefix_shown needs to be reset every time a message is entered
     should_suggest_folders = false
@@ -399,11 +453,15 @@
     // show the default suggestions 
     reby.showSuggestions()
     // start at the desktop
-    bash_process.stdin.write("cd $HOME/Desktop\n")
+    bash_process.stdin.write("cd ;touch .bash_profile;./bash_profile &>/dev/null;cd $HOME/Desktop;\n")
+    exec(`cd $HOME/Desktop;ls -1 -a /|sed 's/^/\\//';ls -1 -a`, (err, stdout, stderr) =>  { all_file_suggestions = stdout.split('\n') }) // try to initilize all_file_suggestions
+
+
+
 
 //
 //
-// Event-driven functions 
+// General Event-driven functions 
 //
 //
     // when window is loaded Onload
@@ -412,8 +470,6 @@
                 // focus on the main input box
                 message_input_Element.focus()
             }
-
-
     // this fixes some annoying scrolling stuff 
         $(document).on('DOMMouseScroll mousewheel', '.Scrollable', function(ev) 
             {
@@ -450,39 +506,57 @@
                         return prevent()
                     }
             })
-    // When enter is pressed, then simulate clicking submit 
-        $("input").keypress(function(event) 
-            {
-                const ENTER = 13;
-                if (event.which == ENTER) 
-                    {
-                        event.preventDefault();
-                        $('form.chat input[type="submit"]').click();
-                    }
-            });
-
     // capture keypresses 
         document.addEventListener('keydown', function(event) 
             {
                 const key = event.key // "ArrowRight", "ArrowLeft", "ArrowUp", or "ArrowDown"
+                const ENTER = 13
                 
-                // press up for history
-                if (key === "ArrowUp")
+                // When enter is pressed
+                if (event.which == ENTER)
                     {
-                        // if possible, go back an index 
-                        if (command_history_index > 1) { command_history_index -= 1 }
+                        event.preventDefault()
+                        WhenUserSendsMessage()
+                    }
+                // press up for history
+                else if (key === "ArrowUp")
+                    {
+                        if (command_history_index == command_history.length)
+                            {
+                                user_was_typing = message_input_Element.value
+                                message_input_Element.value = ""
+                            }
+                        command_history_index -= 1
+                        if (command_history_index < 1) { command_history_index = 1 }
                         shadowText.value = command_history[ command_history_index ]
                     }
+                else if (key === "ArrowDown")
+                    {
+                        if (command_history_index == command_history.length-1)
+                            {
+                                message_input_Element.value = user_was_typing
+                            }
+                        command_history_index += 1
+                        command_history_length = command_history.length
+                        if (command_history_index >= command_history_length)
+                            {
+                                command_history_index = command_history_length
+                                shadowText.value = ""
+                            }
+                        else
+                            {
+                                shadowText.value = command_history[ command_history_index ]
+                            }
+                    }
             
-            });
-
+            })
     // Tab completion 
         // add a keydown listener to the input box
         // link it to keyHandler
         if (message_input_Element.addEventListener) 
             {
-                message_input_Element.addEventListener('keydown',this.keydownHandler,false)
-                message_input_Element.addEventListener('keyup',this.keyupHandler,false)
+                message_input_Element.addEventListener('keydown',keydownHandler,false)
+                message_input_Element.addEventListener('keyup',keyupHandler,false)
             } 
         // when tab is pressed, convert placeholder text to actual text 
         function keydownHandler(an_event) 
@@ -655,12 +729,15 @@
                             }
                     }
             } // end function 
-
-    // when user sends their message 
-        $('form.chat input[type="submit"]').click(function(event) 
+    // when user clicks send 
+        send_button.addEventListener("click",function(event)
             {
                 event.preventDefault()
-
+                WhenUserSendsMessage()
+            })
+    // when user sends a message
+        function WhenUserSendsMessage()
+            {
                 // get the user's command 
                 var original_message  = message_input_Element.value;
                 // if there was input in the text box 
@@ -727,10 +804,7 @@
                 // give Reby the message_
                 // CHANGED
                 RebyResponse(original_message)
-            })
-
-
-
+            }
 
 
 
@@ -751,25 +825,20 @@
                     })
             }
 
-
-        
-        
-        
-        
         // when the bash process gives output
         bash_process.stdout.on('data', (data) => 
             {
                 aggregated_bash_response += `${data}` // converts the data buffer into a string
-                console.log("the current aggregated response is ", aggregated_bash_response)
+                // console.log("the current aggregated response is ", aggregated_bash_response)
                 end_regex = new RegExp(bash_end_string )
                 if (aggregated_bash_response.search(end_regex) > -1)
                     {
-                        console.log("the ending key was found")
+                        // console.log("the ending key was found")
                         bash_response = aggregated_bash_response.slice(0,aggregated_bash_response.search(end_regex))
                         // get rid of the stuff from aggregated_bash_reponse
                         end_removal_regex = new RegExp("[\\s\\S]*" +bash_end_string + "\n")
                         aggregated_bash_response = aggregated_bash_response.replace(end_removal_regex,"")
-                        console.log("aggregated response after is")
+                        // console.log("aggregated response after is")
                         // let BashRun() know that the response is ready
                         end_of_bash_response_was_found = true
                     }
@@ -781,14 +850,14 @@
         bash_process.stderr.on('data', (data) => 
             {
                 aggregated_bash_response += `${data}`
-                console.log("current stderr aggregated response:\n",Indent(aggregated_bash_response))
+                //show("current stderr aggregated response:\n",Indent(aggregated_bash_response))
                 //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
             })
         async function BashRun(command_)
             {
                 // send the command
                 bash_end_string   =  `end${Math.random()}`
-                console.log("The ending key is ",bash_end_string)
+                // show("The ending key is ",bash_end_string)
                 bash_process.stdin.write(`${command_}\necho ${bash_end_string}\n`)
                 // wait for 200 miliseconds, then check if bash has responded
                 loop_num = 0
@@ -806,7 +875,7 @@
                 answer = bash_response
                 bash_response = ""
                 end_of_bash_response_was_found = false
-                return answer
+                return answer.replace(/\n$/,"")
             }
         async function BashRunAndCheck(command_,key_regex)
             {
@@ -837,8 +906,7 @@
             }
 
 
-
-    // this function selects the [folder] in goto [folder] 
+    // this function selects the [folder] in go to [folder] 
     // and does similar things for other suggestions in []
     var TryToSelectBracketPlaceHolder = function()
         {
@@ -859,8 +927,6 @@
                     createSelection(message_input_Element,begining_of_box_input,end_of_box_input)
                 }
         }
-
-
     // helps for excaping "" and such 
     function Escape(the_string)
         {
@@ -875,7 +941,7 @@
             // if no location history exists, then add the current directory
             if (location_history.length == 0) { location_history.push(await BashRun('pwd')) }
             // current_dir is the last thing in the history 
-            var current_dir_output = location_history.slice(-1)[0]
+            var current_dir_output = await location_history.slice(-1)[0]
             // make sure to add a / to the end of the current_dir if it doesn't have one
             if (current_dir_output.match(/[^\/]$/)) { current_dir_output += '/' }
             
@@ -1093,9 +1159,11 @@
     async function ThingExists(the_location)
         {
             // this includes hidden folders
-            console.log("checking if:",the_location," exists or not using the command")
-            console.log('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
+            //show("starting ThingExists()")
+            //show("checking if:",the_location," exists or not using the command")
+            //show('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
             value = await BashRun('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
+            //show("end ThingExists()")
             return (value === "true"||value === "true\n")
         }
     // parent directory
@@ -1158,7 +1226,6 @@
             // then only shows the files               : (grep -v "/$")
             return await BashRun('ls -L -p -1 -A | grep "^\\\\." | grep -v "/$" ')
         }
-
     // returns a string of non-hidden files and folders
     async function FilesAndFoldersReadable(input_ = { include_hidden_files:false })
         {
@@ -1192,6 +1259,9 @@
         }
 
 
+
+
+
 // this is the reby command class 
 RebyCommand = function(input_ = {prefix:"", initial_check:async function(the_command){},responses:{}})
     {
@@ -1210,7 +1280,9 @@ whereami_Command             = new RebyCommand({prefix:"where am i"             
                 {
                     return async function(message_)
                         {
-                            reby.says("In the file system, you're at:\n"+ await BashRun("pwd"))
+                            reby.says("In the file system, you're at:") 
+                            LAST_OUTPUT = await BashRun("pwd")
+                            reby.says(LAST_OUTPUT,true,true)
                             reby.suggestions = [ "show stuff", "go to [folder]","go up","go home","show hidden stuff", "open [file or folder]"]
                             console.log("I just finished the whereami command")
                         }
@@ -1224,14 +1296,42 @@ showstuff_Command            = new RebyCommand({prefix:"show stuff"             
             if (the_command.match(/^show stuff */i))
                 {
                     //console.log("about to show stuff");
-                    return async function(message_)
-                        {
-                            //console.log("running show stuff")
-                            reby.says("Okay!\nHere's all the folders/files \nat your current location:\n\n" + await FilesAndFoldersReadable(),false,true)
-                            //console.log("just showed stuff")
-                            reby.suggestions = [ "go to [folder]", "show files", "show hidden stuff", "create folder [folder's name]", "delete [file or folder]" , "rename [file or folder]", "move [file or folder]", "copy [file or folder]", "create file [file's name]", "who owns [file or folder]", "show permissions for [file or folder]" ]
-                        }
+                    return showstuff_Command.responses["default"]
                 }
+        }, 
+    responses: 
+        {
+            default : async function(message_)
+                        {
+                            folders_  = (await FoldersAsString()).replace(/(^\s+|\s+$)/,"")
+                            files_    = (await   FilesAsString()).replace(/(^\s+|\s+$)/,"")
+                            if (folders_.length==0 && files_.length==0)
+                                {
+                                    reby.says("Well there aren't any files or folders here")
+                                    LAST_OUTPUT = ""
+                                }
+                            else if (folders_.length==0 && files_.length!=0)
+                                {
+                                    reby.says("Okay!\nThere aren't any folders, but here are the files:\n\n"+files_,false,true)
+                                    LAST_OUTPUT = files_
+                                }
+                            else if (folders_.length!=0 && files_.length==0)
+                                {
+                                    reby.says("Okay!\nThere aren't any files, but here are the folders\n\n:"+folders_,false,true )
+                                    LAST_OUTPUT = folders_
+                                }
+                            else
+                                {
+                                    reby.says("Okay!\nHere's all the folders/files at your current location:\n\nFolders:\n"+ 
+                                              Indent(folders_)+'\n'+
+                                              "\nFiles:\n"+
+                                              Indent(files_),false,true)
+                                    LAST_OUTPUT  = folders_
+                                    LAST_OUTPUT += '\n'+files_
+                                }
+                            reby.suggestions = [ "go to [folder]", "show hidden stuff", "create folder [folder's name]", "delete [file or folder]" , "rename [file or folder]", "move [file or folder]", "copy [file or folder]", "create file [file's name]", "who owns [file or folder]", "show permissions for [file or folder]" ]
+                        }
+        
         }
     })
 showfiles_Command            = new RebyCommand({prefix:"show files"              ,
@@ -1241,7 +1341,9 @@ showfiles_Command            = new RebyCommand({prefix:"show files"             
                 {
                     return async function(message_)
                         {
-                            reby.says("Here they are:\n\n" + await FilesAsString(),false,true)
+                            LAST_OUTPUT = await FilesAsString()
+                            reby.says("Here they are:")
+                            reby.says(LAST_OUTPUT,true,true)
                             reby.suggestions = [ "move [file or folder]", "delete [file or folder]" , "show hidden files", "rename [file or folder]", "open [file] with [app]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
                         }
                 }
@@ -1254,7 +1356,9 @@ showfolders_Command          = new RebyCommand({prefix:"show folders"           
                 {
                     return async function(message_)
                         {
-                            reby.says("Here they are:\n\n" + await FoldersAsString(),false,true)
+                            LAST_OUTPUT = await FoldersAsString()
+                            reby.says("Here they are:")
+                            reby.says(LAST_OUTPUT,true,true)
                             reby.suggestions = [ "go to [folder]", "show hidden folders", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
                         }
                 }
@@ -1267,8 +1371,32 @@ showhiddenstuff_Command      = new RebyCommand({prefix:"show hidden stuff"      
                 {
                     return async function(message_)
                         {
-                            // display the output 
-                            reby.says("No problem, here's all the hidden folders/files \nat your current location:\n\n" + await HiddenFilesAndFoldersReadable(),false,true)
+                            folders_ = (await HiddenFoldersAsString()).replace(/(^\s+|\s+$)/,"")
+                            files_   = (await HiddenFilesAsString()).replace(/(^\s+|\s+$)/,"")
+                            if (folders_.length==0 && files_.length==0)
+                                {
+                                    reby.says("Well there aren't any files or folders here")
+                                    LAST_OUTPUT = ""
+                                }
+                            else if (folders_.length==0 && files_.length!=0)
+                                {
+                                    reby.says("Okay!\nThere aren't any folders, but here are the files:\n\n"+files_,false,true)
+                                    LAST_OUTPUT = files_
+                                }
+                            else if (folders_.length!=0 && files_.length==0)
+                                {
+                                    reby.says("Okay!\nThere aren't any files, but here are the folders\n\n:"+folders_,false,true )
+                                    LAST_OUTPUT = folders_
+                                }
+                            else
+                                {
+                                    reby.says("Okay!\nHere's all the folders/files at your current location:\n\nFolders:\n"+ 
+                                              Indent(folders_)+'\n'+
+                                              "\nFiles:\n"+
+                                              Indent(files_),false,true)
+                                    LAST_OUTPUT  = folders_
+                                    LAST_OUTPUT += '\n'+files_
+                                }
                             // #REBY FYI
                             reby.says("Just FYI, hidden things start with a period .\nSo if you want to make a hidden folder\nJust make a normal folder with a period at the begining")
                             reby.suggestions = [ "go to [folder]", "create folder [folder's name]", "delete [file or folder]" , "rename [file or folder]", "move [file or folder]", "copy [file or folder]", "create file [file's name]", "who owns [file or folder]", "show permissions for [file or folder]" ]
@@ -1283,7 +1411,8 @@ showhiddenfiles_Command      = new RebyCommand({prefix:"show hidden files"      
                 {
                     return async function(message_)
                         {
-                            reby.says("Here they are:\n\n" + await HiddenFilesAsString())
+                            LAST_OUTPUT = await HiddenFilesAsString()
+                            reby.says("Here they are:\n\n" + LAST_OUTPUT,false,true)
                             reby.suggestions = [ "open [file] with [app]", "move [file or folder]", "delete [file or folder]", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
                         }
                 }
@@ -1296,7 +1425,8 @@ showhiddenfolders_Command    = new RebyCommand({prefix:"show hidden folders"    
                 {
                     return async function(message_)
                         {
-                            reby.says("Here they are:\n\n" + await HiddenFoldersAsString())
+                            LAST_OUTPUT = await HiddenFoldersAsString()
+                            reby.says("Here they are:\n\n" + LAST_OUTPUT,false,true)
                             reby.suggestions = [ "go to [folder]", "show hidden folders", "rename [file or folder]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
                         }
                 }
@@ -1323,9 +1453,12 @@ goto_Command                 = new RebyCommand({prefix:"go to "                 
                                 if (await FolderExists(a_location))
                                     {
                                         // change to the new location and then record it
-                                        location_history.push(await BashRun("cd "+Escape(a_location)+";pwd")) 
-                                        // show stuff from the new location 
-                                        reby.says("Okay\nHere's what is at th new location:\n\n" + await FilesAndFoldersReadable(),false,true)
+                                        location_history.push(await BashRun("cd "+Escape(a_location)+";pwd"))
+                                        // show stuff from the new location
+                                        reby.says("Okay\nHere's what is at the new location:\n\n" + await FilesAndFoldersReadable(),false,true)
+                                        folders_  = (await FoldersAsString()).replace(/(^\s+|\s+$)/,"")
+                                        files_    = (await   FilesAsString()).replace(/(^\s+|\s+$)/,"")
+                                        LAST_OUTPUT = folders_ + '\n' + files_
                                     }
                                 // if the location isn't a folder 
                                 else 
@@ -1340,7 +1473,6 @@ goto_Command                 = new RebyCommand({prefix:"go to "                 
                     }
             },
     })
-
 goback_Command               = new RebyCommand({prefix:"go back"                 ,
     initial_check : async function(the_command)
         {
@@ -1356,8 +1488,7 @@ goback_Command               = new RebyCommand({prefix:"go back"                
                                 {
                                     // then remove one from the history
                                     location_history.pop()
-                                    // change directory to the new location
-                                    await BashRun('cd '+Escape(await CurrentLocation()))
+                                    location_history.push(await BashRun("cd "+Escape(await CurrentLocation())+";pwd"))
                                     reby.says("Okay\nHere's the new location's files:\n\n" + await FilesAndFoldersReadable(),false,true)
                                 }
                             else 
@@ -1370,7 +1501,6 @@ goback_Command               = new RebyCommand({prefix:"go back"                
                 }
         },
     })
-
 goup_Command                 = new RebyCommand({prefix:"go up"                   ,
     initial_check : async function(the_command)
         {
@@ -1391,7 +1521,6 @@ goup_Command                 = new RebyCommand({prefix:"go up"                  
                 }
         }
     })
-
 gohome_Command               = new RebyCommand({prefix:"go home"                 ,
     initial_check : async function(the_command)
         {
@@ -1409,7 +1538,6 @@ gohome_Command               = new RebyCommand({prefix:"go home"                
                 }
         }
     }) 
-
 whoami_Command               = new RebyCommand({prefix:"who am i"                ,
     initial_check : async function(the_command)
         {
@@ -1423,7 +1551,6 @@ whoami_Command               = new RebyCommand({prefix:"who am i"               
                 }
         },
     })
-
 whoareyou_Command            = new RebyCommand({prefix:"who are you"             ,
     initial_check : async function(the_command)
         {
@@ -1493,7 +1620,6 @@ whatstoday_Command           = new RebyCommand({prefix:"whats today"            
                 }
         }
     })
-
 whoowns_Command              = new RebyCommand({prefix:"who owns "               ,
     initial_check : async function(the_command)
         {
@@ -1662,7 +1788,7 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                 }
         }
     })
-openwith_Command             = new RebyCommand({prefix:"open with "              ,
+openwith_Command             = new RebyCommand({prefix:"open [folder] with "     ,
     initial_check : async function(the_command)
         {
             if (the_command.match(/^open +(.*[^ ]) +with(?=( *))\2(.+?) *$/i))
@@ -1791,9 +1917,10 @@ delete_Command               = new RebyCommand({prefix:"delete "                
                                     // see if a_location is a folder 
                                     if (await FolderExists(a_location))
                                         {
+                                            console.log(`I think ${a_location} is a file`)
                                             // if its a folder do one command
                                             // delete the folder and everything in it (recursive)
-                                            await BashRun('rm -r '+a_location)
+                                            await BashRun('rm -r '+Escape(a_location))
                                             // give a response
                                             reby.says("Finished")
                                             reby.suggestions = [ "show folders", "delete [file or folder]" , "move [file or folder]", "show hidden folders", "rename [file or folder]", "open [file] with [app]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
@@ -1801,8 +1928,9 @@ delete_Command               = new RebyCommand({prefix:"delete "                
                                     // if its a file
                                     else 
                                         {
+                                            console.log(`I think ${a_location} is a file`)
                                             // remove it like normal 
-                                            await BashRun('rm '+a_location)
+                                            await BashRun('rm '+Escape(a_location))
                                             // give a response
                                             reby.says("Finished")
                                             reby.suggestions = [ "show files", "move [file or folder]", "delete [file or folder]" , "show hidden files", "rename [file or folder]", "open [file] with [app]", "copy [file or folder]", "who owns [file or folder]", "show permissions for [file or folder]" ]
@@ -2168,12 +2296,109 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                 }
         }
     })
+find_Command                 = new RebyCommand({prefix:"find "                   ,
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^(find ?|look ?for ?|where ?is ?).+/i))
+                {
+                    return async function(message_)
+                        {
+                            reby.says("Okay, I'm looking (this might take a second)")
+                            thing_name = message_.replace(/(find ?|look ?for ?|where is ?)/,"")
+                            all_locations = await BashRun("locate -i "+Escape(thing_name)+";find $HOME -iname "+Escape('*'+thing_name+'*')) + "\n"
+                            
+                            // remove duplicates
+                            all_locations = (uniq(all_locations.split('\n'))).join('\n')
 
+                            // get rid of lines with permission denied
+                            all_locations = all_locations.replace(/.+Permission denied\n/g,"")
+                            
+                            // for usage later
+                            find_Command.all_locations = all_locations
+                            
+                            num_of_matches = all_locations.match(/\n/g).length
+                            // check and see if anything was found
+                            if (num_of_matches == 5)
+                                {
+                                    reby.says("I couldn't find anything :/")
+                                    LAST_OUTPUT = ""
+                                }
+                            else if (num_of_matches > 5)
+                                {
+                                    all_locations = '\n' + all_locations
+                                    // Reduction #1, weed out all the ones that dont end 
+                                    if (all_locations.length > 5) 
+                                        {  
+                                            removed_matches = (all_locations.match(RegExp("\n.*\\/"+thing_name+"(\\.\\w+|)(?=\n)",'gi'))).join('')
+                                            if (removed_matches.match(/\n/g).length > 0 ) 
+                                                { 
+                                                    all_locations = removed_matches 
+                                                }
+                                        }
 
+                                    // Reduction #2, remove matches inside of hidden folders
+                                    if (all_locations.match(/\n/g).length > 5) 
+                                        {  
+                                            removed_matches = all_locations.replace(RegExp("\n.*\\/\\..+"+thing_name,'gi'), "")
+                                            if (removed_matches.match(/\n/g).length > 0 ) { all_locations = removed_matches }
+                                        }
+                                    
+                                    // Have reby respond
+                                    all_locations = all_locations.replace(/^\n/g,"")
+                                    LAST_OUTPUT = all_locations
 
-
-
+                                    // check which ones were in the home directory
+                                    home_dir = await BashRun("echo $HOME")
+                                    home_dir_escaped = home_dir.replace(/\//g,"\\/")
+                                    home_dir_escaped = home_dir.replace(/\n/g,"")
+                                    
+                                    if (all_locations.search(RegExp("(\n|^)"+home_dir_escaped)) != -1)
+                                        {
+                                            reby.says("There were several matches so I tried to remove any partial matches\nIn the home folder I found:")
+                                            all_home_dir_matches = ((all_locations.match(RegExp("(\n|^)"+home_dir_escaped+".+",'g'))).sort().join("")).replace(/^\n/g,"")
+                                            all_home_dir_matches = all_home_dir_matches.replace(RegExp("(\n|^)"+home_dir_escaped,'g'),"$1")
+                                            reby.says(all_home_dir_matches , true,true)
+                                            all_locations = all_locations.replace( RegExp("(\n|^)"+home_dir_escaped+".+",'g'), "" )
+                                            if ((all_locations.replace(/\s*/,"")).length == 0)
+                                                {
+                                                    reby.says("I didn't find any matches outside of that")
+                                                }
+                                            else
+                                                {
+                                                    reby.says("Outside of that I found:")
+                                                    reby.says(all_locations,true,true)
+                                                }
+                                        }
+                                    else 
+                                        {
+                                            // respond
+                                            LAST_OUTPUT = all_locations.replace(/^\n/,"")
+                                            reby.says("There were several matches so I tried to remove any partial matches")
+                                            reby.says(LAST_OUTPUT,true,true)
+                                            // FIXME, add a lingering command of 'show all' , 'include partial matches' 
+                                        }
+                                    
+                                }
+                            else
+                                {
+                                    LAST_OUTPUT = all_locations.join('\n')
+                                    reby.says("Okay here is what I found")
+                                    reby.says(LAST_OUTPUT,true,true)
+                                }
+                            return null
+                        }
+                }
+        }
+    })
+// replace_Command             
+    // /replace This^/
+// run_Command
+// compile_Command
+// install_Command 
 // End of RebyCommands
+
+
+
 async function RebyResponse(a_command)
     {
         // console.log("about to do reby's response");
@@ -2205,7 +2430,7 @@ async function RebyResponse(a_command)
         if (RESPONSE_FUNCTIONS.length === 0)
             {
                 reby.says("I think thats a bash message\nThis is what bash said after I ran it:\n")
-                reby.says(await BashRun(a_command),true)
+                reby.says(await BashRun(a_command),true,true)
                 // TODO, make bash output monospaced
             }
         else 
@@ -2223,6 +2448,12 @@ async function RebyResponse(a_command)
         
         // show the suggestions at the end of each message
         reby.showSuggestions()
+        // update the location if it changed
+        actual_current_location = (await BashRun("pwd"))+'/'
+        if (await CurrentLocation() != actual_current_location)
+            {
+                location_history.push(actual_current_location)
+            }
         // main files and folders
         all_file_suggestions = (await BashRun("ls -1 -a /|sed 's/^/\\//';ls -1 -a")).split("\n")
     }
