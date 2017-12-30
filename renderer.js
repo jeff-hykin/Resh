@@ -235,14 +235,18 @@
 
 
 
-
+//
 //
 // globals 
 //
-    var $              = require('jQuery') 
-    const { spawn }    = require('child_process') 
-    const { exec }     = require('child_process')
-    var bash_process = spawn('bash\n', { shell: true })
+//
+    var $                = require('jQuery') 
+    const { spawn }      = require('child_process') 
+    const { exec }       = require('child_process')
+    var Sudoer           = require('electron-sudo').default
+    let sudo_options     = {name : 'electron sudo application'}
+    let sudoer           = new Sudoer(sudo_options)
+    var bash_process     =        spawn('bash\n', { shell: true })
     var location_history = []
     var command_history  = [""]
     var dont_run_message = false
@@ -300,7 +304,7 @@
                         // FIXME, check for accidental html-escape sequences 
                         
                         // create Reby's response
-                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p '+font_class+style_+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
+                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p class="Scrollable" '+font_class+style_+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
                         
                         // Scroll down when the new message_ is made
                         var focusBottom = document.getElementById("main_container")
@@ -368,9 +372,12 @@
                     }
             }
 
+
+
+
 //
 //
-// general helper functions 
+// General Helper Functions 
 //
 //
     // got the below function from https://stackoverflow.com/questions/646611/programmatically-selecting-partial-text-in-an-input-field
@@ -439,9 +446,11 @@
         }// 
 
 
+
+
 //
 //
-//  Initilization of things 
+//  Initilization of Things 
 //
 //
 
@@ -461,7 +470,7 @@
 
 //
 //
-// General Event-driven functions 
+// Event-driven Functions 
 //
 //
     // when window is loaded Onload
@@ -810,7 +819,7 @@
 
 //
 //
-// specific helper functions 
+// Specific Helper Functions 
 //
 //
     //
@@ -850,6 +859,8 @@
         bash_process.stderr.on('data', (data) => 
             {
                 aggregated_bash_response += `${data}`
+                show("Error is:")
+                show(Indent(aggregated_bash_response))
                 //show("current stderr aggregated response:\n",Indent(aggregated_bash_response))
                 //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
             })
@@ -865,7 +876,7 @@
                     { 
                         loop_num += 1
                         a = await timer_for(100)
-                        if (loop_num > 100)
+                        if (loop_num > 1000)
                             {
                                 show("BashRun is probabaly in an infinite loop",loop_num)
                             }
@@ -906,6 +917,69 @@
             }
 
 
+    //
+    // Sudo helper functions
+    //
+        sudo_has_been_used = false 
+        async function Sudo(stuff)
+            {
+                // create the sudo process only when its needed
+                if (! sudo_has_been_used)
+                    {
+                        sudo_has_been_used = true
+                        var sudo_process = sudoer.spawn('bash\n', { shell: true })
+                        sudo_process.stdout.on('data', (data) => 
+                            {
+                                aggregated_bash_response += `${data}` // converts the data buffer into a string
+                                // console.log("the current aggregated response is ", aggregated_bash_response)
+                                end_regex = new RegExp(bash_end_string )
+                                if (aggregated_bash_response.search(end_regex) > -1)
+                                    {
+                                        // console.log("the ending key was found")
+                                        bash_response = aggregated_bash_response.slice(0,aggregated_bash_response.search(end_regex))
+                                        // get rid of the stuff from aggregated_bash_reponse
+                                        end_removal_regex = new RegExp("[\\s\\S]*" +bash_end_string + "\n")
+                                        aggregated_bash_response = aggregated_bash_response.replace(end_removal_regex,"")
+                                        // console.log("aggregated response after is")
+                                        // let BashRun() know that the response is ready
+                                        end_of_bash_response_was_found = true
+                                    }
+                                else 
+                                    {
+                                        // console.log("bash response didn't contain all output in 1-go")
+                                    }
+                            })
+                        sudo_process.stderr.on('data', (data) => 
+                            {
+                                aggregated_bash_response += `${data}`
+                                //show("current stderr aggregated response:\n",Indent(aggregated_bash_response))
+                                //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
+                            })
+                    }
+                // send the command
+                bash_end_string   =  `end${Math.random()}`
+                // show("The ending key is ",bash_end_string)
+                bash_process.stdin.write(`${command_}\necho ${bash_end_string}\n`)
+                // wait for 200 miliseconds, then check if bash has responded
+                loop_num = 0
+                while (!end_of_bash_response_was_found) 
+                    { 
+                        loop_num += 1
+                        a = await timer_for(100)
+                        if (loop_num > 1000)
+                            {
+                                show("BashRun is probabaly in an infinite loop",loop_num)
+                            }
+                    }
+                
+                // once a response is given, reset the variables, and return the response
+                answer = bash_response
+                bash_response = ""
+                end_of_bash_response_was_found = false
+                return answer.replace(/\n$/,"")
+            }
+    
+    
     // this function selects the [folder] in go to [folder] 
     // and does similar things for other suggestions in []
     var TryToSelectBracketPlaceHolder = function()
@@ -991,7 +1065,9 @@
             owner_per     = raw_permissions.slice(1,4)
             groups_per    = raw_permissions.slice(4,7)
             everyones_per = raw_permissions.slice(7,10)
-            
+            // show("owners permissions:"+owner_per)
+            // show("groups permissions:"+groups_per)
+            // show("everyones permissions:"+everyones_per)
             owner_ = await WhoOwns(file_location)
             group_ = await BashRun('stat -f "%Sg" "'+file_location+'"')
             
@@ -1031,17 +1107,18 @@
                         if (the_permissions.owner.canRead    ) { can_do += "    look at the file\n" }
                         if (the_permissions.owner.canWrite   ) { can_do += "    edit the file\n"    }
                         if (the_permissions.owner.canExecute ) { can_do += "    run the file\n"     }
-                        if (can_do != "") { can_do = "owner: You can:\n" + can_do }
+                        if (can_do != "") { can_do = "owner: You can:\n" + can_do + '\n' }
                         
-                        cant_do = ""
-                        if (!the_permissions.owner.canRead    ) { cant_do += "    look at the file\n" }
-                        if (!the_permissions.owner.canWrite   ) { cant_do += "    edit the file\n"    }
-                        if (!the_permissions.owner.canExecute ) { cant_do += "    run the file\n"     }
-                        if (cant_do != "") { cant_do = "owner: You're not able to:\n" + cant_do }
+                        // cant_do = ""
+                        // if (!the_permissions.owner.canRead    ) { cant_do += "    look at the file\n" }
+                        // if (!the_permissions.owner.canWrite   ) { cant_do += "    edit the file\n"    }
+                        // if (!the_permissions.owner.canExecute ) { cant_do += "    run the file\n"     }
+                        // if (cant_do != "") { cant_do = "owner: You're not able to:\n" + cant_do }
                         
-                        connect_with = "\n"
-                        if (cant_do == "" || can_do == "") { connect_with = "" }
-                        permissions_output += can_do + connect_with + cant_do + "\n"
+                        // connect_with = "\n"
+                        // if (cant_do == "" || can_do == "") { connect_with = "" }
+                        // permissions_output += can_do + connect_with + cant_do + "\n"
+                        permissions_output += can_do 
                         
                     }
                 else if (who_owns_the_file == 'root')
@@ -1055,17 +1132,18 @@
                         if (the_permissions.owner.canRead    ) { can_do += "    look at the file\n" }
                         if (the_permissions.owner.canWrite   ) { can_do += "    edit the file\n"    }
                         if (the_permissions.owner.canExecute ) { can_do += "    run the file\n"     }
-                        if (can_do != "") { can_do  = "owner: "+the_permissions.owner.name + "(another user) can:\n" + can_do }
+                        if (can_do != "") { can_do  = "owner: "+the_permissions.owner.name + "(another user) can:\n" + can_do + '\n' }
                         
-                        cant_do = ""
-                        if (!the_permissions.owner.canRead    ) { cant_do += "    look at the file\n" }
-                        if (!the_permissions.owner.canWrite   ) { cant_do += "    edit the file\n"    }
-                        if (!the_permissions.owner.canExecute ) { cant_do += "    run the file\n"     }
-                        if (cant_do != "") { cant_do = "owner: "+the_permissions.owner.name + "(another user) is not able to:\n" + cant_do }
+                        // cant_do = ""
+                        // if (!the_permissions.owner.canRead    ) { cant_do += "    look at the file\n" }
+                        // if (!the_permissions.owner.canWrite   ) { cant_do += "    edit the file\n"    }
+                        // if (!the_permissions.owner.canExecute ) { cant_do += "    run the file\n"     }
+                        // if (cant_do != "") { cant_do = "owner: "+the_permissions.owner.name + "(another user) is not able to:\n" + cant_do }
                         
-                        connect_with = "\n"
-                        if (cant_do == "" || can_do == "") { connect_with = "" }
-                        permissions_output += can_do + connect_with + cant_do + "\n"
+                        // connect_with = "\n"
+                        // if (cant_do == "" || can_do == "") { connect_with = "" }
+                        // permissions_output += can_do + connect_with + cant_do + "\n"
+                        permissions_output += can_do 
                     }
                 
                 // talk about the group
@@ -1073,22 +1151,22 @@
                 // and current user is in the group
                 if ( (the_permissions.owner.name != current_username) && (await GroupIncludesUser(the_permissions.group.name)) )
                     {
-                        
                         can_do = ""
                         if (the_permissions.group.canRead    ) { can_do += "    look at the file\n" }
                         if (the_permissions.group.canWrite   ) { can_do += "    edit the file\n"    }
                         if (the_permissions.group.canExecute ) { can_do += "    run the file\n"     }
-                        if (can_do != "") { can_do = "group: You (and everyone else in "+the_permissions.group.name+") can:\n" + can_do }
+                        if (can_do != "") { can_do = "group: You (and everyone else in "+the_permissions.group.name+") can:\n" + can_do + '\n' }
                         
-                        cant_do = ""
-                        if (!the_permissions.group.canRead    ) { cant_do += "    look at the file\n" }
-                        if (!the_permissions.group.canWrite   ) { cant_do += "    edit the file\n"    }
-                        if (!the_permissions.group.canExecute ) { cant_do += "    run the file\n"     }
-                        if (cant_do != "") { cant_do = "group: You (and everyone else in "+the_permissions.group.name+") are not able to:\n" + cant_do }
+                        // cant_do = ""
+                        // if (!the_permissions.group.canRead    ) { cant_do += "    look at the file\n" }
+                        // if (!the_permissions.group.canWrite   ) { cant_do += "    edit the file\n"    }
+                        // if (!the_permissions.group.canExecute ) { cant_do += "    run the file\n"     }
+                        // if (cant_do != "") { cant_do = "group: You (and everyone else in "+the_permissions.group.name+") are not able to:\n" + cant_do }
                         
-                        connect_with = "\n"
-                        if (cant_do == "" || can_do == "") { connect_with = "" }
-                        permissions_output += can_do + connect_with + cant_do + "\n"
+                        // connect_with = "\n"
+                        // if (cant_do == "" || can_do == "") { connect_with = "" }
+                        // permissions_output += can_do + connect_with + cant_do + "\n"
+                        permissions_output += can_do 
 
                     }
                 else 
@@ -1098,26 +1176,27 @@
                         if (the_permissions.group.canRead    ) { can_do += "    look at the file\n" }
                         if (the_permissions.group.canWrite   ) { can_do += "    edit the file\n"    }
                         if (the_permissions.group.canExecute ) { can_do += "    run the file\n"     }
-                        if (can_do != "") { can_do = "group: Everyone in "+the_permissions.group.name+" can:\n" + can_do }
+                        if (can_do != "") { can_do = "group: Everyone in "+the_permissions.group.name+" can:\n" + can_do + '\n' }
                         
-                        cant_do = ""
-                        if (!the_permissions.group.canRead    ) { cant_do += "    look at the file\n" }
-                        if (!the_permissions.group.canWrite   ) { cant_do += "    edit the file\n"    }
-                        if (!the_permissions.group.canExecute ) { cant_do += "    run the file\n"     }
-                        if (cant_do != "") { cant_do = "group: Everyone in "+the_permissions.group.name+" is not able to:\n" + cant_do }
-                        // FIXME, check if the file owner is in the group
-                        // if they are in the group (and the owner is not the current user)
-                        // then say "Everyone other than " owner can/cant ... 
-                        // FIXME, if 
-                        //    user is in the group 
-                        //    but the user is also the owner, 
-                        //    and the owner has less permissions than the group 
-                        // then 
-                        //    say "Everyone in the group except you"
+                        // cant_do = ""
+                        // if (!the_permissions.group.canRead    ) { cant_do += "    look at the file\n" }
+                        // if (!the_permissions.group.canWrite   ) { cant_do += "    edit the file\n"    }
+                        // if (!the_permissions.group.canExecute ) { cant_do += "    run the file\n"     }
+                        // if (cant_do != "") { cant_do = "group: Everyone in "+the_permissions.group.name+" is not able to:\n" + cant_do }
+                        // // FIXME, check if the file owner is in the group
+                        // // if they are in the group (and the owner is not the current user)
+                        // // then say "Everyone other than " owner can/cant ... 
+                        // // FIXME, if 
+                        // //    user is in the group 
+                        // //    but the user is also the owner, 
+                        // //    and the owner has less permissions than the group 
+                        // // then 
+                        // //    say "Everyone in the group except you"
                         
-                        connect_with = "\n"
-                        if (cant_do == "" || can_do == "") { connect_with = "" }
-                        permissions_output += can_do + connect_with + cant_do + "\n"
+                        // connect_with = "\n"
+                        // if (cant_do == "" || can_do == "") { connect_with = "" }
+                        // permissions_output += can_do + connect_with + cant_do + "\n"
+                        permissions_output += can_do 
 
                     }
                 
@@ -1126,17 +1205,18 @@
                 if (the_permissions.everyone.canRead    ) { can_do += "    look at the file\n" }
                 if (the_permissions.everyone.canWrite   ) { can_do += "    edit the file\n"    }
                 if (the_permissions.everyone.canExecute ) { can_do += "    run the file\n"     }
-                if (can_do != "") { can_do = "everyone: Everyone else can:\n" + can_do }
+                if (can_do != "") { can_do = "everyone: Everyone else can:\n" + can_do + '\n' }
                 
-                cant_do = ""
-                if (!the_permissions.everyone.canRead    ) { cant_do += "    look at the file\n" }
-                if (!the_permissions.everyone.canWrite   ) { cant_do += "    edit the file\n"    }
-                if (!the_permissions.everyone.canExecute ) { cant_do += "    run the file\n"     }
-                if (cant_do != "") { cant_do = "everyone: Everyone else is not able to:\n" + cant_do }
-                connect_with = "\n"
-                if (cant_do == "" || can_do == "") { connect_with = "" }
-                permissions_output += can_do + connect_with + cant_do + "\n"
-
+                // cant_do = ""
+                // if (!the_permissions.everyone.canRead    ) { cant_do += "    look at the file\n" }
+                // if (!the_permissions.everyone.canWrite   ) { cant_do += "    edit the file\n"    }
+                // if (!the_permissions.everyone.canExecute ) { cant_do += "    run the file\n"     }
+                // if (cant_do != "") { cant_do = "everyone: Everyone else is not able to:\n" + cant_do }
+                // connect_with = "\n"
+                // if (cant_do == "" || can_do == "") { connect_with = "" }
+                // permissions_output += can_do + connect_with + cant_do + "\n"
+                permissions_output += can_do 
+                
                 reby.says(permissions_output)
             }
     // returns true if wifi is connected to a rounter 
@@ -1188,11 +1268,11 @@
             // then only shows the folders             : (grep "/$")
             // gets rid of the trailing /'s            : .replace(/\/(\n|$)/g,"\n")
             string_response = await BashRun('ls -L -p -1 | grep "/$" ')
-            show("before removing cannot access")
-            show("var:string_response")
+            // show("before removing cannot access")
+            // show("var:string_response")
             string_response = string_response.replace(/.+cannot access.+\s/g,"")
-            show("after removing cannot access")
-            show("var:string_response")
+            // show("after removing cannot access")
+            // show("var:string_response")
             return string_response.replace(/\/(\n|$)/g,"\n")
         }
     // returns a string-list of files kind of like ls -1
@@ -1257,8 +1337,6 @@
                 }
             
         }
-
-
 
 
 
@@ -1720,10 +1798,12 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     // the message_ should be an answer to "Whose permissions would you like to change?"
                     // FIXME, this needs to be more restricted
                     // FIXME, there needs to be an "everyone" and an "everyone else"
-                        if (message_.search(/owner/   ) != -1) { message_ = "the owner"; changepermissionsfor_Command.which_level_char = 'u' }
+                    if      (message_.search(/owner/   ) != -1) { message_ = "the owner"; changepermissionsfor_Command.which_level_char = 'u' }
                     else if (message_.search(/group/   ) != -1) { message_ = "the group"; changepermissionsfor_Command.which_level_char = 'g' }
                     else if (message_.search(/everyone/) != -1) { message_ = "everyone" ; changepermissionsfor_Command.which_level_char = 'o' }
                     
+                    // show("changeing permissions for "+changepermissionsfor_Command.which_level_char)
+
                     // keep the which_level variable for another function 
                     changepermissionsfor_Command.which_level = message_
                     // ask the question
@@ -1738,7 +1818,8 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     // the message_ should be an answer to "Should "+changepermissionsfor_Command.which_level+" be able to look at the file?"
                     changepermissionsfor_Command.can_read = ParseYesOrNo(message_)
                     // FIXME, handle non y/n responses 
-                    
+                    // show("person/group can read file?",changepermissionsfor_Command.can_read)
+
                     // ask about write permissions
                     reby.says("Should "+changepermissionsfor_Command.which_level+" be able to edit the file?")
                     // give suggestions
@@ -1751,7 +1832,7 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     // the message_ should be an answer to "Should "+changepermissionsfor_Command.which_level+" be able to edit the file?"
                     changepermissionsfor_Command.can_write = ParseYesOrNo(message_)
                     // FIXME, handle non y/n responses
-                    
+                    // show("person/group can write file?",changepermissionsfor_Command.can_write)
                     
                     // ask about exec permissions
                     reby.says("Should "+changepermissionsfor_Command.which_level+" be able to run the file?")
@@ -1765,14 +1846,16 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     // the message_ should be an answer to "Should "+changepermissionsfor_Command.which_level+" be able to execute the file?"
                     changepermissionsfor_Command.can_execute = ParseYesOrNo(message_)
                     // FIXME, handle non y/n responses
-                    
+                    // show("person/group can run file?",changepermissionsfor_Command.can_execute)
+
+                    // show ("about to make change")
                     // FIXME, handle scenarios where user does not have permission to change permissions
-                    if (changepermissionsfor_Command.can_read    === true ) { await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+r '+Escape(changepermissionsfor_Command.file_location)) }  
-                    if (changepermissionsfor_Command.can_write   === true ) { await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+w '+Escape(changepermissionsfor_Command.file_location)) } 
-                    if (changepermissionsfor_Command.can_execute === true ) { await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+x '+Escape(changepermissionsfor_Command.file_location)) } 
-                    if (changepermissionsfor_Command.can_read    === false) { await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-r '+Escape(changepermissionsfor_Command.file_location)) }  
-                    if (changepermissionsfor_Command.can_write   === false) { await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-w '+Escape(changepermissionsfor_Command.file_location)) } 
-                    if (changepermissionsfor_Command.can_execute === false) { await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-x '+Escape(changepermissionsfor_Command.file_location)) } 
+                    if (changepermissionsfor_Command.can_read    === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+r '+Escape(changepermissionsfor_Command.file_location)) ) }  
+                    if (changepermissionsfor_Command.can_write   === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+w '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    if (changepermissionsfor_Command.can_execute === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+x '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    if (changepermissionsfor_Command.can_read    === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-r '+Escape(changepermissionsfor_Command.file_location)) ) }  
+                    if (changepermissionsfor_Command.can_write   === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-w '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    if (changepermissionsfor_Command.can_execute === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-x '+Escape(changepermissionsfor_Command.file_location)) ) } 
                     
                     
                     // give confirmation 
