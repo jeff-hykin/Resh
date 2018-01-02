@@ -1,77 +1,182 @@
 
 // How this program works
-    // Example 
-        // user types "where am i"
-            // input_ callback function starts 
-            // input_ function generates a GUI "where am i" message bubble 
-            // input_ function gives "where am i" to the reby-response function
-                // reby-response function starts 
-                // part 1 of reby response 
-                    // RESPONSE_FUNCTIONS array is empty 
-                    // therefore run each function in the initial_check_functions array 
-                        // example of on of those functions:
-                            // does "where am i" == what_the_user_typed
-                            // if so, then return a function of what to do next
-                    // if one of the initial_check_functions returns a function
-                    // then put that returned-function in the RESPONSE_FUNCTIONS array
-                // part 2 of reby response
-                    // if the is a function in the RESPONSE_FUNCTIONS array
-                    // then run the top-most function
-                    // example"
-                        // if user typed "where am i" then the reponse function
-                        // generates a GUI message "You are at " + Bash("pwd") 
+    // heres a basic sudo example  
+    // user types "where am i"
+        // input_ callback function starts 
+        // input_ function generates a GUI "where am i" message bubble 
+        // input_ function gives "where am i" to the reby-response function
+            // reby-response function starts 
+            // part 1 of reby response 
+                // RESPONSE_FUNCTIONS array is empty 
+                // therefore run through every command, see if there are any matches
+                    // example of one of those functions:
+                        // command_1_check: does "where am i" == what_the_user_typed?
+                        //    if so, then return a function of what to do next
+                // if one of the initial_check_functions is triggered, 
+                // then that command's response function will be added to RESPONSE_FUNCTIONS
+            // part 2 of reby response
+                // if the is at least 1 function in the RESPONSE_FUNCTIONS array
+                // then run the top-most function
+                // example:
+                    // function whatToDoWhenWhereAmIisTyped 
+                    // generate a message "You are at " + current_location
         // wait for next user input_
         //
-        // I got this original interface from https://codepen.io/adobewordpress/pen/wGGMaV
-        // I reworked it and added functionality, but thats what I originally started with 
+        // I got this original html interface from https://codepen.io/adobewordpress/pen/wGGMaV
+        // I reworked the html and created all the core functionality, but thats what I originally started with
 
 // Stuff that needs to be done
+    // Finished! Resh 0.1 
+        // DONE, find an interface
+        // DONE, get shell commands working in javascipt (shelljs)
+        // DONE, add "go to" command
+        // DONE, add "go back" command
+        // DONE, add "go up" command
+        // DONE, add "where am i (pwd)" command
+        // DONE, add "who am i (whoami)" command
+        // DONE, add "who are you " command
+        // DONE, *press up to see last message_*
+        // DONE, add "whats my ip address (ip config)" command
+        // DONE, add "whats my mac address" command
+        // DONE, add "whats today (date)" command
+        // DONE, add "show stuff (ls)" command
+        // DONE, add "show files " command
+        // DONE, add "show folders " command
+        // DONE, add "show hidden stuff (ls -a)" command
+        // DONE, add "show hidden files" command
+        // DONE, add "show hidden folders" command
+        // DONE, add "new file" command
+        // DONE, add "delete (rm -i, detect if folder rm -r)" command
+        // DONE, add "copy (cp and ditto, handles folders, handles links/alias)" command
+        // DONE, add "move" command
+        // DONE, add "rename" command
+        // DONE, add "new folder" command
+        // DONE, add "show stuff and info (ls -l)" command
+        // DONE, add "who owns" command
+        // DONE, add "show permissions for __file" command
+        // DONE, add "change permissions for " command
+        // DONE 0.1 version of tab-completion for commands
+        // DONE 0.1 version of file/folder tab completion
+        // DONE, get the app packager for mac working
+            
     // Resh 1.0
-        // DONE-ish, add all the standard shortcuts (quit, minimize, etc)
-        // DONE, make the x button actually quit the program
-        // DONE, change hover to not move the element down 
-        // DONE, text box can't paste in electron once built into app. 
-        // DONE, make reby's messages side scroll instead of wrap 
-        // DONE, make large output (>~50 lines) scroll vertically instead of just being a giant message
-        // DONE, fix go back 
-        // DONE, run .bash_profile at the begining of resh to get the other paths
-        // DONE, keep track of hidden/accidental directory changes (like using cd or running a script)
-        // DONE, fix the first all_file_suggestions problem
-        // DONE, fix do up/down arrows
-        // DONE, fix shadow suggestion when a bubble suggestion is clicked
-        //
-        // add a loading sign to show that a command hasn't finished
-        // TODO-ish, get rid of the little message bubble tails 
-        // add a find command
-        // add a run command 
-        // fix the open __ with __ shadow suggestion
-        // Add sudo commands
-        // fix failure to delete 'Finances - 10.csv'
+        // stuff thats DONE 
+            // DONE, totally overhaul the current bash system from shelljs to child processes
+            // DONE, make basically everything async 
+            // DONE!!!, get the packged app running 100% on anyones computer (no brew or other dependencies)
+            // DONE!, 0.3 version of file/folder tab completion
+            // DONE, add "open" command
+            // DONE, add "open with" command
+            // DONE, add most all the standard shortcuts (quit, minimize, etc)
+            // DONE, make the x button actually quit the program
+            // DONE-ish, change hover to not move the element down 
+            // DONE, fix text box can't paste in electron once built into app. 
+            // DONE-ish, make reby's messages side scroll instead of wrap 
+            // DONE!, make large output (>~50 lines) scroll vertically instead of just being a giant message
+            // DONE, fix go back 
+            // DONE, add a "size of" command
+            // DONE, keep track of hidden/accidental directory changes (like using cd or running a script)
+            // DONE, fix the first all_file_suggestions problem
+            // DONE, fix do up/down arrows
+            // DONE, fix shadow suggestion when a bubble suggestion is clicked
+            // DONE, add a change owner command
+            // DONE!, Add 0.1 version of sudo command
+        // refine sudo commands
+            // remove general sudo handling add custom sudo command handling
+            // check if admin or not before offering to run sudo
         // figure out how to handle continuously updating bash output (ex: top)
-            // figure out piping
-            // create an internal method for updating reby's message with new text
+            // figure out piping to html
+            // clean / add to reby object commands for updating/appending to previous message bubbles
+            // add a loading sign to show that a command has not finished
+            // find a better method than "end1.0403930" to know when a process is finished
+            // package all BashRun stuff into one object
             // create a "cancel" command
-        // add a server disconnect command
-        // add a change owner command
-        // add a change group command
-        // FIXME, add more error handling 
-            // (especially for sudo)
-            // server problems
-        // add a download command 
+            // integrate something that converts bash output text to html text
+            // integrate something that converts bash output text to html and moves cursor with javascript
+            // create some kind of html object that stays fixed above the suggestions and below the message bubbles
+            // create something that converts all keyboard shortcuts (ctrl+C) into bash 
+            // create an interactive command
+            // figure out how to know when a program is being held up because its waiting on stdin
+        // figure out way to install of ssh-pass
+            // brew tap theseal/ssh-askpass
+            // brew install ssh-askpass
+            // brew services start theseal/ssh-askpass/ssh-askpass
+            // *reboot*
+            // it should go to /usr/local/Cellar/ssh-askpass/1.2.1/bin/ssh-askpass
+            // add the following to the bash profile 
+            //     export SUDO_ASKPASS="/usr/local/Cellar/ssh-askpass/1.2.1/bin/ssh-askpass"
+        // create the full 1.0 version of the suggestion system
+            // fix the open __ with __ shadow suggestion
+            // alternate between file suggestions as you type (if one is a longer version than another)
+            // maybe try the bash tab-till next fork in possibilities
+        // Stability fixes
+            // figure out why env vars are not being set, figure out how to add the paths and other things from .bash_profile 
+            // fix failure to delete 'Finances - 10.csv'
+            // fix copy command for folders
+            // fix unable to open folder links/aliases
+            // make sure deleting links works as intended
+            // fix, turn off suggestions when there is a password
+            // add a server disconnect command
+            // handle all the uncovered command error situations
+                // sanatize inputs, even for usernames and password inputs, make sure they don't contain ;'s
+                // sudo "cd" doesnt do anything
+                // commands that dont work on server/ssh
+                // server connection problems
+                // timeout situatons, especially trying to connect to ssh without internet
+                // typoes / misspellings 
+            // make sure everything is escaped before using BashRun
+            // make sure every call of async functions use await
+        // refinement todo's
+            // code cleaning 
+                // make a catch system for exiting commands from throwing errors within other commands
+                // establish a protocol for interjection messages
+                // use an alias for sudo instad of a manual find and replace
+                // reformat the command class
+                    // add ___Command.matcher = /^this matches +/i  to all commands to clean up the code
+                // redo all of "globals" , "general helpers", "initilization", "Event-driven"
+                // get rid of jQuery
+                // combine all possible event driven stuff
+                // clean up the reby response function 
+                // create a preprocessor for scripting commands 
+            // clean up Homebrew install situations (hardlinks)
+            // fix hovering to copy a message moves the bubble if scrolled all the way to the bottom
+            // fix the monospace font that somedoes does and sometimes doesnt occur
+            // fix that horizontal scrolling only works if there is also vertical scrolling
+            // get rid of the little message bubble tails 
+            // fix, you can vertically scroll in the suggestions box (you shouldn't be able to)
+        // completeness todo's 
+            // add an explicit bash command
+            // add a find command
+            // add a run command 
+            // add a change group command
+            // add a download command
+            // add a message for how to delete hardlinks
+            // add a replace command
+        // get rid of dev stuff 
+            // fix my dependencies, make sure all npm packages are incldued/required
+            // get rid of "jeff.hykin" and "build.tamu" from ssh
+            // get rid of all the show()'s and console.logs
+            // get rid of all the debugging tools in main.js
+        
+
     // Resh 1.1
-        // get rid of jQuery
+        // add some kind of write command  (messages to another user)
+        // add "sort by" command
         // add a find __ in __
+        // give __user permission to __ __files
         // improve the find command with locate 
         // improve the find command with Rebex
         // improve the run command with other languages
         // add info command
         // TODO, figure out how to make a grid/table in html, then use that for show stuff with info
-        
 
 
     // Resh 2.0
+        // add memory
+        // define your own commands
         // add 'lingering responses' that are actually a full response function, but if non of the keywords match, they simply run all of the initial checks. ex: ^This 
         // add the following arrays:
+            // most_likely_to_be_used, a function of frequency and most recent. A lot recently will be the highest on the list
             // whenever_there_is_free_time_do_these
             // recently_used (files/folders)
             // frequently_used
@@ -82,12 +187,10 @@
         // have a scripts.json file
         // allow a scripts to be run half-way by letting the user press the down key for each response 
         // auto generate scripts if you notice a user does something frequently
-        // TODO, clean up all the global bash variables into one object 
-        // TODO, make scripting possible
+        // TODO, make 1.0 scripting possible
         // FIXME, add error messages for things that don't work in ssh (like opening a file)
         // TODO, add animation for messages being sent
         // TODO, maybe add help messages for each of the commands
-        // FIXME, figure out how to handle aliases (right now they're considered a file and cant be followed)
         // FIXME, figure out how to show apps (and other 'files' that are actually folders) in an intuitive way
         // TODO, fix the 'everyone in wheel can:' make it skip if it's wheel 
         // TODO, take away title bar with BrowserWindow({titleBarStyle: 'hiddenInset'}); and then make a titlebar div and in CSS set -webkit-app-region: drag
@@ -100,11 +203,6 @@
         // TODO, implement suggestions in the touchbar for mac 
         // TODO, make sure nothing seems illogical for the user due to symbolic links always being followed
         // FIXME, issues with unlocking files (ex: Unable to change file mode on CekoLibrary.h: Operation not permitted)
-        // FIXME, you can vertically scroll in the suggestions box (you shouldn't be able to)
-        // TODO, improve tab suggestions:
-                // figure out a solution for multi-input commands (open _ with _)
-                // alternate between file suggestions as you type (if one is a longer version than another)
-        // FIXME, even for regular input like program names or usernames, make sure they don't contain ;'s
         // FIXME, handle going home in ssh
         // TODO, make tree method on npm better
         //
@@ -113,45 +211,12 @@
         // TODO  features/commands/phrases:
         //   // core language
         //   search
-        //   download (from server)
         //   how big is
         //   show info for 
         //   go forwards
-        //   change owner of 
-        //   give __user permission to __ __files
-        //   *make sure sudo is called when needed
         //   whats running (top)
-        //   DONE, go to
-        //   DONE, go back
-        //   DONE, go up
-        //   DONE, where am i (pwd)
-        //   DONE, who am i (whoami)
-        //   DONE, who are you 
-        //   DONE, whats my ip address (ip config)
-        //   DONE, whats my mac address
-        //   DONE, whats today (date)
-        //   DONE, show stuff (ls)
-        //   DONE, show files 
-        //   DONE, show folders 
-        //   DONE, show hidden stuff (ls -a)
-        //   DONE, show hidden files
-        //   DONE, show hidden folders
-        //   DONE, show stuff and info (ls -l)
-        //   DONE, who owns
-        //   DONE, show permissions for __file
-        //   DONE, change permissions for 
-        //   DONE, open
-        //   DONE, open with
         //   show more details
         //   that^ / he^ / she^ / they^ (uses the pipe command)
-        //   sort by
-        //   DONE-ish, *press up to see last message_*
-        //   DONE, new file
-        //   DONE, delete (rm -i, detect if folder rm -r)
-        //   DONE, copy (cp and ditto, handles folders, handles links/alias)
-        //   DONE, move
-        //   DONE, rename
-        //   DONE, new folder
         //   find (built in grep)
         //   help
         //   exit
@@ -217,7 +282,6 @@
         //   ifconfig
         //   ipconfig
         //   iostat
-        //   write (messages to another user)
         //   hostname
         //   install
         //   jobs
@@ -243,15 +307,18 @@
     var $                = require('jQuery') 
     const { spawn }      = require('child_process') 
     const { exec }       = require('child_process')
-    var Sudoer           = require('electron-sudo').default
-    let sudo_options     = {name : 'electron sudo application'}
-    let sudoer           = new Sudoer(sudo_options)
-    var bash_process     =        spawn('bash\n', { shell: true })
+    var fs               = require('fs')
+    var bash_process     = spawn('bash\n', { shell: true })
     var location_history = []
     var command_history  = [""]
     var dont_run_message = false
+    // debugging 
+    dont_show_debugging = false
     // for the bash commands
-    var bash_end_string                = "" 
+    var sudo_process                   = null
+    var last_bash_command              = ""
+    var bash_end_strings               = []
+    var bash_start_strings             = []
     var bash_response                  = ""
     var aggregated_bash_response       = ""
     var end_of_bash_response_was_found = false
@@ -262,7 +329,7 @@
     var body                  = document.getElementsByClassName('body')
     var suggestion_box        = document.getElementById("suggestionBox")
     // for reby commands 
-    LAST_OUTPUT = ""
+    LAST_OUTPUT        = ""
     initial_checks     = [] // initial_checks is a list of functions that should return either a response-function or null
     RESPONSE_FUNCTIONS = []// RESPONSE_FUNCTIONS will contain the next response reby should give
     command_prefixes   = [] // list of start-strings to be used for tab completion
@@ -289,11 +356,11 @@
 
                         // options for the message
                         font_class = ""
-                        style_     = "" 
+                        style_     = "max-height: 400px; overflow-y: scroll; overflow-x: scroll;"
                         
-                        if (monospaced_font)       { font_class  += 'class="monospaced"' }
-                        if (number_of_newlines>50) { style_      += 'max-height: 400px; overflow-y: scroll;' }
-                        if (dont_wrap_lines)       { style_      += 'white-space: pre;' }
+                        if (monospaced_font)       { style_  += "font-family: monospace;  white-space: pre;" }
+                        if (number_of_newlines>50) { style_  += 'max-height: 400px; overflow-y: scroll;' }
+                        if (dont_wrap_lines)       { style_  += 'white-space: pre;' }
 
                         // give style the proper CSS encasing if there is any styling
                         if (style_.length != 0){ style_ = ` style="${style_}" ` } 
@@ -312,6 +379,7 @@
                     },
                 suggestions : ["show stuff","where am I?","create file [file's name]", "create folder", "go to ", "who am I?"],
                 suggestion_index : 0,
+                memory : {}, // I'll use this later
                 showSuggestions : function()
                     {
                         // remove any blank elements 
@@ -454,7 +522,6 @@
 //
 //
 
-    location_history.push(BashRun("cd ;cd Desktop;pwd"))
     command_history_index  = command_history.length -1
     command_prefix_shown   = false // FIXME command_prefix_shown needs to be reset every time a message is entered
     should_suggest_folders = false
@@ -462,9 +529,9 @@
     // show the default suggestions 
     reby.showSuggestions()
     // start at the desktop
-    bash_process.stdin.write("cd ;touch .bash_profile;./bash_profile &>/dev/null;cd $HOME/Desktop;\n")
+    // FIXME, take SUDO_ASKPASS out of the below line
+    bash_process.stdin.write("cd ;touch .bash_profile;chmod u+x .bash_profile;./.bash_profile &>/dev/null;export SUDO_ASKPASS=\"/usr/local/Cellar/ssh-askpass/1.2.1/bin/ssh-askpass\";cd $HOME/Desktop;\n")
     exec(`cd $HOME/Desktop;ls -1 -a /|sed 's/^/\\//';ls -1 -a`, (err, stdout, stderr) =>  { all_file_suggestions = stdout.split('\n') }) // try to initilize all_file_suggestions
-
 
 
 
@@ -516,7 +583,7 @@
                     }
             })
     // capture keypresses 
-        document.addEventListener('keydown', function(event) 
+        document.addEventListener('keydown', async function(event) 
             {
                 const key = event.key // "ArrowRight", "ArrowLeft", "ArrowUp", or "ArrowDown"
                 const ENTER = 13
@@ -530,6 +597,10 @@
                 // press up for history
                 else if (key === "ArrowUp")
                     {
+                        if (location_history == 0)
+                            {
+                                location_history.push(await BashRun("pwd"))
+                            }
                         if (command_history_index == command_history.length)
                             {
                                 user_was_typing = message_input_Element.value
@@ -834,59 +905,141 @@
                     })
             }
 
+
         // when the bash process gives output
         bash_process.stdout.on('data', (data) => 
             {
                 aggregated_bash_response += `${data}` // converts the data buffer into a string
                 // console.log("the current aggregated response is ", aggregated_bash_response)
-                end_regex = new RegExp(bash_end_string )
-                if (aggregated_bash_response.search(end_regex) > -1)
+                bash_response_regex_pattern = new RegExp(bash_start_strings[0]+"\n([\\s\\S]*)"+bash_end_strings[0]+"\n")
+                result = aggregated_bash_response.match(bash_response_regex_pattern)
+                if (result)
                     {
-                        // console.log("the ending key was found")
-                        bash_response = aggregated_bash_response.slice(0,aggregated_bash_response.search(end_regex))
+                        if (! dont_show_debugging) // have output turned off for some things
+                            {
+                                show("Found:")
+                                show(Indent(aggregated_bash_response))
+                            }
+                        // show("the ending key was found")
+                        bash_response = result[1]
                         // get rid of the stuff from aggregated_bash_reponse
-                        end_removal_regex = new RegExp("[\\s\\S]*" +bash_end_string + "\n")
-                        aggregated_bash_response = aggregated_bash_response.replace(end_removal_regex,"")
+                        aggregated_bash_response = aggregated_bash_response.replace(bash_response_regex_pattern,"")
+                        // remove the start and end from the arrays
+                        bash_end_strings.shift()
+                        bash_start_strings.shift()
                         // console.log("aggregated response after is")
                         // let BashRun() know that the response is ready
                         end_of_bash_response_was_found = true
                     }
                 else 
                     {
-                        // console.log("bash response didn't contain all output in 1-go")
+                        if (! dont_show_debugging) // have output turned off for some things
+                            {
+                                // show("Could not find it^")
+                            }
                     }
             })
         bash_process.stderr.on('data', (data) => 
             {
                 aggregated_bash_response += `${data}`
-                show("Error is:")
-                show(Indent(aggregated_bash_response))
+                show("bash stderr response is:")
+                show(Indent(`${data}`))
                 //show("current stderr aggregated response:\n",Indent(aggregated_bash_response))
                 //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
             })
+        bash_is_being_recursive = false
         async function BashRun(command_)
             {
-                // send the command
-                bash_end_string   =  `end${Math.random()}`
+                // create start/end tags
+                bash_start_strings.push(`start${Math.random()}`)
+                bash_end_strings  .push(`end${Math.random()}`)
+                most_recent_bash_start_string = bash_start_strings[bash_start_strings.length-1]
+                most_recent_bash_end_string   = bash_end_strings  [bash_end_strings.length-1]
+
+                // error check 
+                if (bash_start_strings.length >1)
+                    {
+                        show(command_+" was send before "+last_bash_command+ " was found ")
+                    }
+                last_bash_command = command_
+
+                if (!dont_show_debugging)
+                    {
+                        // show("Bash is being recursive:"+bash_is_being_recursive)
+                        show("about to run:")
+                        show(Indent(most_recent_bash_start_string))
+                        show(Indent(command_))
+                        show(Indent(most_recent_bash_end_string))
+                    }
                 // show("The ending key is ",bash_end_string)
-                bash_process.stdin.write(`${command_}\necho ${bash_end_string}\n`)
-                // wait for 200 miliseconds, then check if bash has responded
+                bash_process.stdin.write(`echo ${most_recent_bash_start_string};\n`)
+                bash_process.stdin.write(`${command_} 2>&1\n`) // redirect stderr to stdout 
+                bash_process.stdin.write(`echo ${most_recent_bash_end_string};\n`)
+                // wait for 100 miliseconds, then check if bash has responded
                 loop_num = 0
                 while (!end_of_bash_response_was_found) 
                     { 
                         loop_num += 1
                         a = await timer_for(100)
-                        if (loop_num > 1000)
+                        if (loop_num == 100)
                             {
                                 show("BashRun is probabaly in an infinite loop",loop_num)
+                                show(most_recent_bash_start_string)
+                                show("It was waiting on:"+command_)
+                                show(most_recent_bash_end_string)
                             }
                     }
                 
                 // once a response is given, reset the variables, and return the response
-                answer = bash_response
+                answer = bash_response.replace(/\n$/,"")
+                // if the operation isn't permitted 
+                if (answer.match(/Operation not permitted|Permission denied/))
+                    {
+                        // checking for admin is recursive, so reset the vars
+                        
+                        // FIXME, check if the user is an admin, otherwise the password will be asked continually
+
+                        // if yes
+                        if (confirm("Your password is needed for that\nDo you want to enter your password?")) 
+                            {
+                                should_turn_off_recursive = !bash_is_being_recursive
+                                show("there are this many starts left to find:"+bash_start_strings.length)
+                                // reset vars before becoming recursive
+                                bash_response = ""
+                                await BashRun("sudo -A "+last_bash_command+"\n")
+                                if (should_turn_off_recursive)
+                                    {
+                                        bash_is_being_recursive = false
+                                    }
+                                show("finshed sudo bash run, bash is being recursive:"+bash_is_being_recursive)
+                                show("there are this many starts left to find:"+bash_start_strings.length)
+                                reby.says("Okay, I ran the command")
+                            }
+                        else
+                            {
+                                reby.says("Okay")
+                            }
+                        // async function inputPassword(message_) 
+                        //     {
+                        //         // if yes
+                        //         if (ParseYesOrNo(message_)) 
+                        //             {
+                        //                 await BashRun("sudo -A "+last_bash_command+"\n")
+                        //                 reby.says("Okay, I ran the command")
+                        //             }
+                        //         else
+                        //             {
+                        //                 reby.says("Okay")
+                        //             }
+                        //     }
+                        // reby.suggestions = ['yes','no']
+                        // reby.showSuggestions() // force show the suggestions 
+                        // RESPONSE_FUNCTIONS.push(inputPassword)
+                        
+                    }
                 bash_response = ""
                 end_of_bash_response_was_found = false
-                return answer.replace(/\n$/,"")
+                return answer
             }
         async function BashRunAndCheck(command_,key_regex)
             {
@@ -917,70 +1070,7 @@
             }
 
 
-    //
-    // Sudo helper functions
-    //
-        sudo_has_been_used = false 
-        async function Sudo(stuff)
-            {
-                // create the sudo process only when its needed
-                if (! sudo_has_been_used)
-                    {
-                        sudo_has_been_used = true
-                        var sudo_process = sudoer.spawn('bash\n', { shell: true })
-                        sudo_process.stdout.on('data', (data) => 
-                            {
-                                aggregated_bash_response += `${data}` // converts the data buffer into a string
-                                // console.log("the current aggregated response is ", aggregated_bash_response)
-                                end_regex = new RegExp(bash_end_string )
-                                if (aggregated_bash_response.search(end_regex) > -1)
-                                    {
-                                        // console.log("the ending key was found")
-                                        bash_response = aggregated_bash_response.slice(0,aggregated_bash_response.search(end_regex))
-                                        // get rid of the stuff from aggregated_bash_reponse
-                                        end_removal_regex = new RegExp("[\\s\\S]*" +bash_end_string + "\n")
-                                        aggregated_bash_response = aggregated_bash_response.replace(end_removal_regex,"")
-                                        // console.log("aggregated response after is")
-                                        // let BashRun() know that the response is ready
-                                        end_of_bash_response_was_found = true
-                                    }
-                                else 
-                                    {
-                                        // console.log("bash response didn't contain all output in 1-go")
-                                    }
-                            })
-                        sudo_process.stderr.on('data', (data) => 
-                            {
-                                aggregated_bash_response += `${data}`
-                                //show("current stderr aggregated response:\n",Indent(aggregated_bash_response))
-                                //reby.says("Bash says there was an error :/\n"+Indent(`${data}`))
-                            })
-                    }
-                // send the command
-                bash_end_string   =  `end${Math.random()}`
-                // show("The ending key is ",bash_end_string)
-                bash_process.stdin.write(`${command_}\necho ${bash_end_string}\n`)
-                // wait for 200 miliseconds, then check if bash has responded
-                loop_num = 0
-                while (!end_of_bash_response_was_found) 
-                    { 
-                        loop_num += 1
-                        a = await timer_for(100)
-                        if (loop_num > 1000)
-                            {
-                                show("BashRun is probabaly in an infinite loop",loop_num)
-                            }
-                    }
-                
-                // once a response is given, reset the variables, and return the response
-                answer = bash_response
-                bash_response = ""
-                end_of_bash_response_was_found = false
-                return answer.replace(/\n$/,"")
-            }
-    
-    
-    // this function selects the [folder] in go to [folder] 
+    // this function selects the [folder] in "go to [folder] "
     // and does similar things for other suggestions in []
     var TryToSelectBracketPlaceHolder = function()
         {
@@ -1238,12 +1328,15 @@
     // thing exists
     async function ThingExists(the_location)
         {
+            // Why do this is bash? 
+            // because then this still works in ssh 
+
             // this includes hidden folders
             //show("starting ThingExists()")
             //show("checking if:",the_location," exists or not using the command")
             //show('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
             value = await BashRun('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
-            //show("end ThingExists()")
+            show("var:value")
             return (value === "true"||value === "true\n")
         }
     // parent directory
@@ -1254,11 +1347,27 @@
     // if a folder exists it will return true  
     async function FolderExists(the_location)
         {
-            console.log("checking if:",the_location," exists or not using the command")
-            console.log('if [ -d '+Escape(the_location)+' ]; then echo "true";  fi')
+            // Why do this is bash? 
+            // because then this still works in ssh 
+
+            // show("checking if:",the_location," exists or not using the command")
+            // show('if [ -d '+Escape(the_location)+' ]; then echo "true";  fi')
             value = await BashRun('if [ -d '+Escape(the_location)+' ]; then echo "true";  fi')
-            console.log("the value is:",value)
-            console.log("the value===\"true\" is:",value === "true")
+            // show("the value is:",value)
+            // show("the value===\"true\" is:",value === "true")
+            return (value === "true"||value === "true\n")
+        }
+    // if a file exists it will return true 
+    async function FileExists(the_location)
+        {
+            // Why do this is bash? 
+            // because then this still works in ssh 
+
+            // show("checking if:",the_location," exists or not using the command")
+            // show('if [ -d '+Escape(the_location)+' ]; then echo "true";  fi')
+            value = await BashRun('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
+            // show("the value is:",value)
+            // show("the value===\"true\" is:",value === "true")
             return (value === "true"||value === "true\n")
         }
     // returns a string-list of folders kind of like ls -1 
@@ -1281,11 +1390,11 @@
             // this lists files and  folders           : (ls -L -p -1 )
             // then only shows the files               : (grep -v "/$")
             string_response = await BashRun('ls -L -p -1 | grep -v "/$" ')
-            show("before removing cannot access")
-            show("var:string_response")
+            // show("before removing cannot access")
+            // show("var:string_response")
             string_response = string_response.replace(/.+cannot access.+\s/g,"")
-            show("after removing cannot access")
-            show("var:string_response")
+            // show("after removing cannot access")
+            // show("var:string_response")
             return string_response
         }
     // returns a string-list of only hidden folders kind of like ls -1 
@@ -1337,8 +1446,89 @@
                 }
             
         }
+    // checks if homebrew already has a package
+    async function MakeSureHomebrewHas(package_name)
+        {
+            reby.says("Okay, let me check something")
+            homebrew_packages = await BashRun("brew ls -1")
+            show("homebrew packages are:")
+            show(Indent(homebrew_packages))
+            // check if package is one of the lines
+            if (   homebrew_packages.match(  new RegExp("^"+package_name+"$",'m')  )   )
+                {
+                    show("the package "+package_name+" is installed")
+                    reby.says("finished that check")
+                    // the package is installed 
+                    if (RESPONSE_FUNCTIONS.length > 0)
+                        {
+                            await RESPONSE_FUNCTIONS.pop()("") // no input needed
+                        }
+                    else
+                        {
+                            show("Somewhere MakeSureHomebrewHas() was used, but there was no 'next' function in RESPONSE_FUNCTIONS")
+                        }
+                    return true
+                }
+            else 
+                {
+                    show("the package "+package_name+"is NOT installed")
+                    // store the package_name somewhere so that the response function can access it
+                    MakeSureHomebrewHas.package_name = package_name
+                    // install the package
+                    reby.says("I need to install an addintional package to do this command\nDo you want me to install it now?")
+                    reby.suggestions = ['yes','no']
+                    reby.showSuggestions() // force the suggestions to be shown
+                    // create the response
+                    MakeSureHomebrewHas.respond_to_users_answer = async function (message_)
+                        {
+                            // if no the clear out the stack to cancel the current command
+                            if (!ParseYesOrNo(message_))
+                                {
+                                    reby.says("Okay\nJust run the command again whenever you want to install it")
+                                    // clear the current response
+                                    RESPONSE_FUNCTIONS = []
+                                }
+                            // if user wants to install the package
+                            else 
+                                {
+                                    reby.says("Okay, give me a moment")
+                                    show("about to install a brew package:"+MakeSureHomebrewHas.package_name)
+                                    brew_install_output = await BashRun("brew install "+MakeSureHomebrewHas.package_name)
+                                    homebrew_packages   = await BashRun("brew ls -1")
+                                    show("homebrew packages after install are now:")
+                                    show(Indent(homebrew_packages))
+                                    // check if package is one of the lines
+                                    if (   homebrew_packages.match(  new RegExp("^"+package_name+"$",'m')  )   )
+                                        {
+                                            // FIXME, check for caveates, path fixes, warnings, etc 
+                                            reby.says("okay the package is installed now\nback to what we were doing")
+                                            // immediately run the next command on the stack for continuity
+                                            if (RESPONSE_FUNCTIONS.length > 0)
+                                                {
+                                                    await RESPONSE_FUNCTIONS.pop()("") // no input needed
+                                                }
+                                            else
+                                                {
+                                                    console.log("Somewhere MakeSureHomebrewHas() was used, but there was no 'next' function in RESPONSE_FUNCTIONS")
+                                                }
+                                            show("finished MakeSureHomebrewHas.respond_to_users_answer()")
+                                            return
+                                        }
+                                    else 
+                                        {
+                                            reby.says(`for some reason I was unable to install the package :/\nyou can try installing it yourself by looking up "homebrew ${MakeSureHomebrewHas.package_name}"`)
+                                            // clear the current responses so that the command is canceled
+                                            RESPONSE_FUNCTIONS = []
+                                        }
+                                }
+                            
+                        }
+                    RESPONSE_FUNCTIONS.push(MakeSureHomebrewHas.respond_to_users_answer)
+                    show("finished MakeSureHomebrewHas()")
+                    return false
+                }
 
-
+        }
 
 // this is the reby command class 
 RebyCommand = function(input_ = {prefix:"", initial_check:async function(the_command){},responses:{}})
@@ -1348,7 +1538,6 @@ RebyCommand = function(input_ = {prefix:"", initial_check:async function(the_com
         initial_checks.push(input_.initial_check)
         this.responses = input_.responses
     }
-
 
 
 whereami_Command             = new RebyCommand({prefix:"where am i"              ,
@@ -1362,7 +1551,7 @@ whereami_Command             = new RebyCommand({prefix:"where am i"             
                             LAST_OUTPUT = await BashRun("pwd")
                             reby.says(LAST_OUTPUT,true,true)
                             reby.suggestions = [ "show stuff", "go to [folder]","go up","go home","show hidden stuff", "open [file or folder]"]
-                            console.log("I just finished the whereami command")
+                            show("I just finished the whereami command")
                         }
                 }
         }
@@ -1531,7 +1720,8 @@ goto_Command                 = new RebyCommand({prefix:"go to "                 
                                 if (await FolderExists(a_location))
                                     {
                                         // change to the new location and then record it
-                                        location_history.push(await BashRun("cd "+Escape(a_location)+";pwd"))
+                                        await BashRun("cd "+Escape(a_location))
+                                        location_history.push(await BashRun("pwd"))
                                         // show stuff from the new location
                                         reby.says("Okay\nHere's what is at the new location:\n\n" + await FilesAndFoldersReadable(),false,true)
                                         folders_  = (await FoldersAsString()).replace(/(^\s+|\s+$)/,"")
@@ -1566,7 +1756,8 @@ goback_Command               = new RebyCommand({prefix:"go back"                
                                 {
                                     // then remove one from the history
                                     location_history.pop()
-                                    location_history.push(await BashRun("cd "+Escape(await CurrentLocation())+";pwd"))
+                                    await BashRun("cd "+Escape(await CurrentLocation()))
+                                    location_history.push(await BashRun("pwd"))
                                     reby.says("Okay\nHere's the new location's files:\n\n" + await FilesAndFoldersReadable(),false,true)
                                 }
                             else 
@@ -1590,7 +1781,8 @@ goup_Command                 = new RebyCommand({prefix:"go up"                  
                                 // location_history
                             
                             // go up, then put the new directory in the location history
-                            location_history.push(await BashRun('cd ..;pwd'))
+                            await BashRun('cd ..')
+                            location_history.push(await BashRun('pwd'))
                             // FIXME, handle escaping of things
                             reby.says( "Okay\nHere's the new location's files:\n\n" + await FilesAndFoldersReadable(),false,true)
                             reby.suggestions = ["go to [folder]","where am I?","show hidden stuff","go home", "open [file or folder]"]
@@ -1608,8 +1800,8 @@ gohome_Command               = new RebyCommand({prefix:"go home"                
                         {
                             // globals:
                                 // location_history 
-                            
-                            location_history.push(await BashRun("cd ;pwd"))
+                            await BashRun('cd ;')
+                            location_history.push(await BashRun("pwd"))
                             reby.says( "In your home folder you've got:\n\n" + await FilesAndFoldersReadable() ,false,true)
                             reby.suggestions = ["go back","go to [folder]","go up","show hidden stuff", "open [file or folder]"]
                         }
@@ -1737,6 +1929,37 @@ whoowns_Command              = new RebyCommand({prefix:"who owns "              
                 }
         }
     })
+changeowner_Command          = new RebyCommand({prefix:"change owner of "        ,
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^change ?owner (of )?/i))
+                {
+                    return async function(message_)
+                        {
+                            // FIXME, escaping needs to be added 
+                            // FIXME, handle folder cases 
+                            // FIXME, handle confirmation in unix
+                            changeowner_Command.file_location = message_.replace(/^change ?owner\?? ?(of )?/,"")
+                            // FIXME, make sure the file exists
+                            changeowner_Command.current_owner = await WhoOwns(changeowner_Command.file_location)
+                            reby.says("Who will the new owner be?")
+                            return changeowner_Command.responses.changeOwner
+                        }
+                }
+        },
+    responses :
+        {
+            changeOwner : async function(message_)
+                {
+                    // FIXME, make sure the message_ actually is a user's name
+                    if (message_ != changeowner_Command.current_owner)
+                        {
+                            await BashRun("chown "+message_+" "+Escape(changeowner_Command.file_location))
+                            // FIXME, add a confirmation here
+                        }
+                }
+        }
+    })
 showpermissionsfor_Command   = new RebyCommand({prefix:"show permissions for "   ,
     initial_check : async function(the_command)
         {
@@ -1753,10 +1976,10 @@ showpermissionsfor_Command   = new RebyCommand({prefix:"show permissions for "  
                             await ShowPermissionsFor(file_location)
                             
                             // give a warning about admins
-                            permissions_output = "NOTE: if someone is an administrator, they can change these rules" 
+                            permissions_output = "NOTE: all admins can change these rules" 
                             if (await UserIsAdmin())
                                 {
-                                    permissions_output += "\nSince you're an administrator, you can change these rules"
+                                    permissions_output += "\n(You're an Admin)"
                                 }
                             reby.says(permissions_output)
                         }
@@ -1776,7 +1999,7 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                             // FIXME, this needs to be a multi-step message_
                             // FIXME, make sure to give people execute access in higher up directorys so they can actually access the file 
                             changepermissionsfor_Command.file_location = message_.replace(/^change ?permissions ?for +/,"") 
-                            changepermissionsfor_Command.file_name     = await BashRun('basename '+changepermissionsfor_Command.file_location)
+                            changepermissionsfor_Command.file_name     = await BashRun('basename '+Escape(changepermissionsfor_Command.file_location))
                             reby.says("Okay here are the current permissions")
                             await ShowPermissionsFor(changepermissionsfor_Command.file_location)
                             
@@ -1819,7 +2042,10 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     changepermissionsfor_Command.can_read = ParseYesOrNo(message_)
                     // FIXME, handle non y/n responses 
                     // show("person/group can read file?",changepermissionsfor_Command.can_read)
-
+                    show ("just started changing read permissions")
+                    if (changepermissionsfor_Command.can_read    === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+r '+Escape(changepermissionsfor_Command.file_location)) ) }  
+                    if (changepermissionsfor_Command.can_read    === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-r '+Escape(changepermissionsfor_Command.file_location)) ) }  
+                    show ("just finished changing read permissions")
                     // ask about write permissions
                     reby.says("Should "+changepermissionsfor_Command.which_level+" be able to edit the file?")
                     // give suggestions
@@ -1833,7 +2059,10 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     changepermissionsfor_Command.can_write = ParseYesOrNo(message_)
                     // FIXME, handle non y/n responses
                     // show("person/group can write file?",changepermissionsfor_Command.can_write)
-                    
+                    show ("just started changing write permissions")
+                    if (changepermissionsfor_Command.can_write   === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+w '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    if (changepermissionsfor_Command.can_write   === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-w '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    show ("just finished changing write permissions")
                     // ask about exec permissions
                     reby.says("Should "+changepermissionsfor_Command.which_level+" be able to run the file?")
                     // give suggestions
@@ -1848,14 +2077,18 @@ changepermissionsfor_Command = new RebyCommand({prefix:"change permissions for "
                     // FIXME, handle non y/n responses
                     // show("person/group can run file?",changepermissionsfor_Command.can_execute)
 
+                    show ("just started changing execute permissions")
+                    if (changepermissionsfor_Command.can_execute === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+x '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    if (changepermissionsfor_Command.can_execute === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-x '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    show ("just finished changing execute permissions")
                     // show ("about to make change")
                     // FIXME, handle scenarios where user does not have permission to change permissions
-                    if (changepermissionsfor_Command.can_read    === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+r '+Escape(changepermissionsfor_Command.file_location)) ) }  
-                    if (changepermissionsfor_Command.can_write   === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+w '+Escape(changepermissionsfor_Command.file_location)) ) } 
-                    if (changepermissionsfor_Command.can_execute === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+x '+Escape(changepermissionsfor_Command.file_location)) ) } 
-                    if (changepermissionsfor_Command.can_read    === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-r '+Escape(changepermissionsfor_Command.file_location)) ) }  
-                    if (changepermissionsfor_Command.can_write   === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-w '+Escape(changepermissionsfor_Command.file_location)) ) } 
-                    if (changepermissionsfor_Command.can_execute === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-x '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    //if (changepermissionsfor_Command.can_read    === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+r '+Escape(changepermissionsfor_Command.file_location)) ) }  
+                    //if (changepermissionsfor_Command.can_write   === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+w '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    //if (changepermissionsfor_Command.can_execute === true ) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'+x '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    //if (changepermissionsfor_Command.can_read    === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-r '+Escape(changepermissionsfor_Command.file_location)) ) }  
+                    //if (changepermissionsfor_Command.can_write   === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-w '+Escape(changepermissionsfor_Command.file_location)) ) } 
+                    //if (changepermissionsfor_Command.can_execute === false) { show(await BashRun('chmod '+changepermissionsfor_Command.which_level_char+'-x '+Escape(changepermissionsfor_Command.file_location)) ) } 
                     
                     
                     // give confirmation 
@@ -1895,8 +2128,13 @@ openwith_Command             = new RebyCommand({prefix:"open [folder] with "    
                                     // delay the action for a sec so the user can read the message_
                                     setTimeout(async function()
                                         {
-                                            await BashRun('open '+Escape(file_location)+' -a "'+app_name+'"')
+                                            response_ = await BashRun('open '+Escape(file_location)+' -a "'+app_name+'"')
                                         }, 200)
+                                    
+                                    if (response_.match(/^Unable to find application named/))
+                                        {
+                                            reby.says("Hmm I couldn't find any Apps named "+app_name+" :/")
+                                        }
                                 }
                         }
                 }
@@ -1959,7 +2197,7 @@ createfile_Command           = new RebyCommand({prefix:"create file "           
                 }
         }
     })
-sizeof_Command               = new RebyCommand({prefix:"size of ",
+sizeof_Command               = new RebyCommand({prefix:"size of "                ,
     initial_check : async function(the_command)
         {
             if (the_command.match(/^(what is the|what'?s the|)size ?of +/i))
@@ -2123,14 +2361,15 @@ rename_Command               = new RebyCommand({prefix:"rename "                
 copy_Command                 = new RebyCommand({prefix:"copy "                   ,
     initial_check : async function(the_command)
         {
-            if (the_command.match(/^copy +/i))
+            copy_Command.matcher = /^copy +/i 
+            if (the_command.match(copy_Command.matcher))
                 {
                     return async function(message_)
                         {
                             // FIXME, handle folder cases
                             // FIXME, escaping needs to be added 
                             // FIXME, this needs to be a two-step message_
-                            copy_Command.file_location = message_.replace(/^copy +/,"") 
+                            copy_Command.file_location = message_.replace(copy_Command.matcher,"") 
                             copy_Command.file_name     = await BashRun('basename '+Escape(copy_Command.file_location))
                             
                             
@@ -2238,7 +2477,7 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
         },
     responses :
         {
-            answerConnectionAskServer   : async function(message_)
+            answerConnectionAskServer      : async function(message_)
                 {
                     if (message_.match(/^ *ssh */))
                         {
@@ -2256,7 +2495,7 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                             return null
                         }
                 },
-            answerServerAskUsername     : async function(message_)
+            answerServerAskUsername        : async function(message_)
                 {
                     // if the user doesn't know then 
                     if (message_.match(/^ *I don'?t know */i))
@@ -2278,7 +2517,7 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                             return serverconnect_Command.responses.answerUsernameAskPassword
                         }
                 },
-            answerUsernameAskPassword   : async function(message_)
+            answerUsernameAskPassword      : async function(message_)
                 {
                     // if the user doesn't know their username 
                     if (message_.match(/^ *I don'?t know */i))
@@ -2301,7 +2540,7 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                             return serverconnect_Command.responses.answerPasswordRunConnection
                         }
                 },
-            answerPasswordRunConnection : async function(message_)
+            answerPasswordRunConnection    : async function(message_)
                 {
                     
                     
@@ -2478,13 +2717,74 @@ find_Command                 = new RebyCommand({prefix:"find "                  
 // run_Command
 // compile_Command
 // install_Command 
-// End of RebyCommands
+createhardlink_Command       = new RebyCommand({prefix:"create a hardlink to "   ,
+    initial_check : async function(the_command)
+        {
+            createhardlink_Command.matcher = /^create (a )?hardlink( to | )/i
+            if (the_command.match(createhardlink_Command.matcher))
+                {
+                    return async function(message_)
+                        {
+                            // store the data
+                            createhardlink_Command.message_      = message_ // this could cause problems if its by reference
+                            createhardlink_Command.file_location = message_.replace(createhardlink_Command.matcher,"") // get rid of everything except the file name
+                            // line up the next command
+                            RESPONSE_FUNCTIONS.push(createhardlink_Command.responses.step2)
+                            // check if packages are installed (will auto run or auto fail step2)
+                            await MakeSureHomebrewHas("hardlink-osx")
+                            // FIXME, handle folder cases
+                            // FIXME, escaping needs to be added 
+                            // FIXME, this needs to be a two-step message_
+                            show("finished inital_check of createhardlink_Command")
+                            return
+                        }
+                }
+        },
+    responses :
+        {
+            step2 : async function(message_)
+                {
+                    if (createhardlink_Command.message_.match(/^create (a )?hardlink *$/))
+                        {
+                            //FIXME, ask what file if a location isnt included
+                            reby.says("I haven't been programmed for this yet")
+                        }
+                    else
+                        {
+                            
+                            // FIXME, optional things after hardlink could mess with filenames
+                            if (await FileExists(createhardlink_Command.file_location))
+                                {
+                                    reby.says("creating the hardlink")
+                                    show("escaped location is:"+Escape(createhardlink_Command.file_location))
+                                    createhardlink_Command.file_name = await BashRun('basename '+Escape(createhardlink_Command.file_location))
+                                    show("basename of file is:"+createhardlink_Command.file_name)
+                                    // FIXME, what if the file already exists 
+                                    await BashRun(`hln ${Escape(createhardlink_Command.file_location)} ${Escape("hardlink_to_"+createhardlink_Command.file_name)}`)
+                                    reby.says("Okay, the new hardlink is "+Escape("hardlink_to_"+createhardlink_Command.file_name))
+                                    // FIXME, add suggestions
+                                }
+                            else 
+                                {
+                                    reby.says("Sorry, I don't think "+createhardlink_Command.file_location+" exists :/")
+                                }
+                            show("finished step2 of createhardlink_Command")
+                            return null
+                        }
+                }
+        }
+    })
 
 
 
 async function RebyResponse(a_command)
     {
-        // console.log("about to do reby's response");
+        show("about to do reby's response")
+        // if no location history then add a location before doing anything
+        if (location_history == 0)
+            {
+                location_history.push(await BashRun("pwd"))
+            }
         // reset reby's suggestions before each response
         reby.suggestions = []
         reby.suggestion_index = 0
@@ -2513,8 +2813,17 @@ async function RebyResponse(a_command)
         if (RESPONSE_FUNCTIONS.length === 0)
             {
                 reby.says("I think thats a bash message\nThis is what bash said after I ran it:\n")
+                // if user uses sudo
+                if (a_command.match(/^sudo/))
+                    {
+                        // if sudo doesnt include the -A 
+                        if (! a_command.match(/^sudo +-A/))
+                            {
+                                // then add the -A
+                                a_command = a_command.replace(/^sudo /,"sudo -A ")
+                            }
+                    }
                 reby.says(await BashRun(a_command),true,true)
-                // TODO, make bash output monospaced
             }
         else 
             {
@@ -2531,12 +2840,21 @@ async function RebyResponse(a_command)
         
         // show the suggestions at the end of each message
         reby.showSuggestions()
-        // update the location if it changed
-        actual_current_location = (await BashRun("pwd"))+'/'
-        if (await CurrentLocation() != actual_current_location)
-            {
-                location_history.push(actual_current_location)
-            }
-        // main files and folders
-        all_file_suggestions = (await BashRun("ls -1 -a /|sed 's/^/\\//';ls -1 -a")).split("\n")
+        
+        // FIXME, this is just a workaround, figure out an actual way to protect these vars 
+        dont_show_debugging = true
+        actual_last_command = last_bash_command
+
+            // update the location if it changed
+                actual_current_location = (await BashRun("pwd"))+'/'
+                if (await CurrentLocation() != actual_current_location)
+                    {
+                        location_history.push(actual_current_location)
+                    }
+            // main files and folders
+            all_file_suggestions = (await BashRun("ls -1 -a /|sed 's/^/\\//';ls -1 -a")).split("\n")
+            
+        // FIXME, this is just a workaround, figure out an actual way to protect these vars 
+        dont_show_debugging = false
+        last_bash_command  = actual_last_command 
     }
