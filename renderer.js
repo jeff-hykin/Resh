@@ -110,6 +110,7 @@
             // alternate between file suggestions as you type (if one is a longer version than another)
             // maybe try the bash tab-till next fork in possibilities
         // Stability fixes
+            // fix, hardlink fails if homebrew isnt installed (offer to install homebrew)
             // figure out why env vars are not being set, figure out how to add the paths and other things from .bash_profile 
             // fix failure to delete 'Finances - 10.csv'
             // fix copy command for folders
@@ -512,6 +513,26 @@
                     return seen.hasOwnProperty(item) ? false : (seen[item] = true)
                 })
         }// 
+    function findall(regex_pattern, string_)
+        {
+            var output_list = [];
+            while (true) 
+                {
+                    var a_match = regex_pattern.exec(string_);
+                    if (a_match) 
+                        {
+                            // get rid of the string copy
+                            delete a_match.input;
+                            // store the match data
+                            output_list.push(a_match);
+                        }
+                    else
+                        {
+                            break;
+                        }
+                } 
+            return output_list;
+        }
 
 
 
@@ -2618,15 +2639,15 @@ serverconnect_Command        = new RebyCommand({prefix:"connect to a server"    
                 }
         }
     })
-find_Command                 = new RebyCommand({prefix:"find "                   ,
+search_Command               = new RebyCommand({prefix:"search for"              ,
     initial_check : async function(the_command)
         {
-            if (the_command.match(/^(find ?|look ?for ?|where ?is ?).+/i))
+            if (the_command.match(/^(search ?for |look ?for ).+/i))
                 {
                     return async function(message_)
                         {
                             reby.says("Okay, I'm looking (this might take a second)")
-                            thing_name = message_.replace(/(find ?|look ?for ?|where is ?)/,"")
+                            thing_name = message_.replace(/^(search ?for ?|look ?for ?)/,"")
                             all_locations = await BashRun("locate -i "+Escape(thing_name)+";find $HOME -iname "+Escape('*'+thing_name+'*')) + "\n"
                             
                             // remove duplicates
@@ -2712,6 +2733,133 @@ find_Command                 = new RebyCommand({prefix:"find "                  
                 }
         }
     })
+find_Command                 = new RebyCommand({prefix:"find "              ,
+    initial_check : async function(the_command)
+        {
+            if (the_command.match(/^(find |where ?is ).+/i))
+                {
+                    return async function(message_)
+                        {
+                            reby.says("Okay, I'm looking (this might take a second)")
+                            thing_name = message_.replace(/(find ?|look ?for ?|where is ?)/,"")
+                            all_things = await BashRun("mdfind -0 -name "+Escape(thing_name))
+
+                            // list locations 
+                            all_things = all_things.split('\0')
+
+                            
+                            //
+                            // filter out stuff 
+                            //
+                                // check filter function 
+                                    filtered_list    = []
+                                    function check(original_things,after_filter)
+                                        {
+                                            
+                                            if (after_filter.length <= 0)
+                                                {
+                                                    return original_things
+                                                }
+                                            return after_filter
+                                        }
+                                // tier 1, junk
+                                if (all_things.length > 7)
+                                    {
+                                        things_to_filter = ['cache','.webhistory',"Library"]
+                                        things_not_in_find_string = []
+                                        for( each of things_to_filter)
+                                            {
+                                                // make thats not what the person is looking for
+                                                if (!thing_name.match(each))
+                                                    {
+                                                        things_not_in_find_string.push(each)
+                                                    }
+                                            }
+                                        function TheJunkFilter(value, index, ar) 
+                                            {  
+                                                for( each of things_not_in_find_string)
+                                                    {
+                                                        // make sure its not in the search results
+                                                        if (value.match(each))
+                                                            {
+                                                                false
+                                                            }
+                                                    }
+                                                // by default include things
+                                                return true
+                                            } // end junk filter 
+                                        filtered_list = all_things.filter(TheJunkFilter)
+                                        all_things = check(all_things,filtered_list)
+                                        filtered_list = ""
+                                    }
+                                // tier 2, non full-name matches
+                                if (all_things.length > 7)
+                                    {
+                                        // check if there are full-name answers
+                                        for (each of things_to_filter)
+                                            {
+                                                regex_pattern = new RegExp(`(^|/)${thing_name}\.\w+($|/)`,'gi')
+                                                the_match = each.match(regex_pattern)
+                                                if (the_match)
+                                                    {
+                                                        filtered_things.push(each)
+                                                    }
+                                            }
+                                        all_things = check(all_things,filtered_list)
+                                        filtered_list = []
+                                    }
+                                // tier 3, non ending name matches
+                                if (all_things.length > 7)
+                                    {
+                                        for (each of all_things)
+                                            {
+                                                regex_pattern = new RegExp(`((^|/)${thing_name}/[\\s\\S]+|)${thing_name}(\.\w+|)$`,'i')
+                                                the_match = each.match(regex_pattern)
+                                                if (the_match)
+                                                    {
+                                                        filtered_list.push(each)
+                                                    }
+                                            }
+                                        all_things = check(all_things,filtered_list)
+                                        filtered_list = []
+                                    }
+
+                            // get the dir name of each location
+                            list_of_locations = []
+                            for (each of all_things)
+                                {
+                                    show (each)
+                                    regex_pattern = /\/[^\/]+$/
+                                    list_of_locations.push( each.replace(regex_pattern,"") )
+                                }
+
+                            // for usage later
+                            find_Command.all_things = all_things
+                            
+                            // check and see if anything was found
+                            if (all_things.length == 0)
+                                {
+                                    reby.says("I couldn't find anything :/")
+                                    LAST_OUTPUT = ""
+                                }
+
+                            else
+                                {
+                                    LAST_OUTPUT = all_things.join('\n')
+                                    reby.says("Okay here is what I found")
+                                    reby.says(LAST_OUTPUT,true,true)
+                                    reby.suggestions = []
+                                    for (each of list_of_locations)
+                                        {
+                                            reby.suggestions.push("go to "+each)
+                                        }
+                                }
+                            return null
+                        }
+                }
+        }
+    })
+
 // replace_Command             
     // /replace This^/
 // run_Command
