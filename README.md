@@ -24,7 +24,7 @@ Many things like permissions (bash example: `chmod u+x a_file`) have been totall
 
 # Development
 
-This app is still in alpha but is suprizingly useful. The largest missing feature is interactive messages which will hopefully be finished before the end of January. All the basic bash commands have been added, even things like `ssh`. At the moment it is only being developed for Mac. Most of the features will still work on Linux, so once the mac version is complete, I will probably port things to Linux. A beta build will most likely appear around the end of Jan. 
+This app is still in alpha but is suprizingly useful. The largest missing feature is interactive messages which will hopefully be finished before the end of the summer in 2018. All the basic bash commands have been added, even things like `ssh`. At the moment it is only being developed for Mac. Most of the features will still work on Linux, so once the mac version is complete, I will probably port things to Linux. A beta build will most likely appear around the end of Jan. 
 
 The app is being built using Electron and Node.js.
 
