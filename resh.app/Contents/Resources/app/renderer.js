@@ -1,3 +1,4 @@
+import { exists } from 'fs';
 
 
 // How this program works
@@ -766,6 +767,14 @@ function TryToSelectBracketPlaceHolder()
     // has Reby talk about the permissions for a file
     async function ShowPermissionsFor(file_location)
             {
+                console.log(`CHECKING FOR:`,file_location)
+                var is_a_file = await exists(file_location)
+                console.log(`is_a_file is:`,is_a_file)
+                console.log(`!(is_a_file) = `,!(is_a_file))
+                if (!is_a_file)
+                    {
+                        return "Sorry, I don't think that file/folder exists :/"
+                    }
                 the_permissions = await PermissionsFor(file_location)
                 permissions_output = ""
                 current_username = await CurrentUsersname()
@@ -1428,17 +1437,18 @@ showpermissionsfor_Command   = new RebyCommand({prefix:"show permissions for "  
                             // FIXME, escaping needs to be added 
                             // FIXME, handle folder cases 
                             // FIXME, handle confirmation in unix
-                            file_location = message_.replace(/^show ?permissions ?for */,"")
+                            var file_location = message_.replace(/^show ?permissions ?for */,"")
                             
                             // have reby talk about the permissions 
+                            console.log(`ABOUT TO ShowPermissionsFor`)
                             await ShowPermissionsFor(file_location)
                             
                             // give a warning about admins
-                            permissions_output = "NOTE: if someone is an administrator, they can change these rules" 
-                            if (await UserIsAdmin())
-                                {
-                                    permissions_output += "\nSince you're an administrator, you can change these rules"
-                                }
+                            // permissions_output += "NOTE: if someone is an administrator, they can change these rules" 
+                            // if (await UserIsAdmin())
+                            //     {
+                            //         permissions_output += "\nSince you're an administrator, you can change these rules"
+                            //     }
                             reby.says(permissions_output)
                         }
                 }
@@ -2029,9 +2039,13 @@ async function RebyResponse(a_command)
         // then run the message_ as a bash commands 
         if (RESPONSE_FUNCTIONS.length === 0)
             {
-                reby.says("I think thats a bash message\nThis is what bash said after I ran it:\n")
-                reby.says(await BashRun(a_command),true)
-                // TODO, make bash output monospaced
+                reby.says("I think thats a bash message\n")
+                var response = await BashRun(a_command)
+                if (response.trim.length > 0)
+                    {
+                        reby.says("This is what bash said after I ran it:\n")
+                        reby.says(response,true)
+                    }
             }
         else 
             {

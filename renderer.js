@@ -1206,8 +1206,12 @@
     // has Reby talk about the permissions for a file
     async function ShowPermissionsFor(file_location)
             {
+                if (!MakeSureThingExists(file_location))
+                    {
+                        return null 
+                    }
                 the_permissions = await PermissionsFor(file_location)
-                permissions_output = ""
+                var permissions_output = ""
                 current_username = await CurrentUsersname()
                 who_owns_the_file = await WhoOwns(file_location)
                 // talk about the owner 
@@ -1356,9 +1360,10 @@
             //show("starting ThingExists()")
             //show("checking if:",the_location," exists or not using the command")
             //show('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
-            value = await BashRun('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
+            var value = await BashRun('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
+            console.log(`RETURNING THING EXISTS`,value)
             show("var:value")
-            return (value === "true"||value === "true\n")
+            return (value = true || value == "true"|| value == "true\n")
         }
     // parent directory
     async function CurrentParentDirectory()
@@ -1605,7 +1610,7 @@ showstuff_Command            = new RebyCommand({prefix:"show stuff"             
                                 }
                             else if (folders_.length!=0 && files_.length==0)
                                 {
-                                    reby.says("Okay!\nThere aren't any files, but here are the folders\n\n:"+folders_,false,true )
+                                    reby.says("Okay!\nThere aren't any files, but here are the folders:\n\n"+folders_,false,true )
                                     LAST_OUTPUT = folders_
                                 }
                             else
@@ -1962,8 +1967,17 @@ changeowner_Command          = new RebyCommand({prefix:"change owner of "       
                             // FIXME, handle confirmation in unix
                             changeowner_Command.file_location = message_.replace(/^change ?owner\?? ?(of )?/,"")
                             // FIXME, make sure the file exists
+                            if ( message_.trim.length == 0 || !(FileExists(message_) || FolderExists(message_)))
+                                {
+                                    reby.says("Sorry, I don't think thats a file or folder :/")
+                                    return null
+                                }
                             changeowner_Command.current_owner = await WhoOwns(changeowner_Command.file_location)
+                            
                             reby.says("Who will the new owner be?")
+                            var users_ = await BashRun("users")
+                            changeowner_Command.list_of_users = ["me", ...users_.split(/ +/)]
+                            reby.suggestions = changeowner_Command.list_of_users
                             return changeowner_Command.responses.changeOwner
                         }
                 }
@@ -1972,12 +1986,18 @@ changeowner_Command          = new RebyCommand({prefix:"change owner of "       
         {
             changeOwner : async function(message_)
                 {
+                    // if user responds with "me"
+                    if (!(changeowner_Command.list_of_users.includes('me')) && message_.trim == "me")
+                        {
+                            await BashRun("chown \"$(whoami)\" "+Escape(changeowner_Command.file_location))
+                        }
                     // FIXME, make sure the message_ actually is a user's name
                     if (message_ != changeowner_Command.current_owner)
                         {
                             await BashRun("chown "+message_+" "+Escape(changeowner_Command.file_location))
                             // FIXME, add a confirmation here
                         }
+                    reby.says("Okay, Done")
                 }
         }
     })
@@ -1997,12 +2017,12 @@ showpermissionsfor_Command   = new RebyCommand({prefix:"show permissions for "  
                             await ShowPermissionsFor(file_location)
                             
                             // give a warning about admins
-                            permissions_output = "NOTE: all admins can change these rules" 
-                            if (await UserIsAdmin())
-                                {
-                                    permissions_output += "\n(You're an Admin)"
-                                }
-                            reby.says(permissions_output)
+                            // permissions_output = "NOTE: all admins can change these rules" 
+                            // if (await UserIsAdmin())
+                            //     {
+                            //         permissions_output += "\n(You're an Admin)"
+                            //     }
+                            // reby.says(permissions_output)
                         }
                 }
         }
@@ -2960,7 +2980,7 @@ async function RebyResponse(a_command)
         // then run the message_ as a bash commands 
         if (RESPONSE_FUNCTIONS.length === 0)
             {
-                reby.says("I think thats a bash message\nThis is what bash said after I ran it:\n")
+                reby.says("I think thats a bash message\n")
                 // if user uses sudo
                 if (a_command.match(/^sudo/))
                     {
@@ -2971,7 +2991,12 @@ async function RebyResponse(a_command)
                                 a_command = a_command.replace(/^sudo /,"sudo -A ")
                             }
                     }
-                reby.says(await BashRun(a_command),true,true)
+                var response = await BashRun(a_command)
+                if (response.trim.length > 0)
+                    {
+                        reby.says("This is what bash said after I ran it:\n")
+                        reby.says(response,true,true)
+                    }
             }
         else 
             {
