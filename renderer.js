@@ -1206,7 +1206,7 @@
     // has Reby talk about the permissions for a file
     async function ShowPermissionsFor(file_location)
             {
-                if (!MakeSureThingExists(file_location))
+                if (!await MakeSureThingExists(file_location))
                     {
                         return null 
                     }
@@ -1361,9 +1361,11 @@
             //show("checking if:",the_location," exists or not using the command")
             //show('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
             var value = await BashRun('if [ -e '+Escape(the_location)+' ]; then echo "true";  fi')
-            console.log(`RETURNING THING EXISTS`,value)
-            show("var:value")
-            return (value = true || value == "true"|| value == "true\n")
+            var value2 = await BashRun('if [ -d '+Escape(the_location)+' ]; then echo "true";  fi')
+            var result = (value == true || value == "true"|| value == "true\n")
+            var result2 = (value2 == true || value2 == "true"|| value2 == "true\n")
+            console.log(`RETURNING THING EXISTS`,!!result)
+            return result 
         }
     // parent directory
     async function CurrentParentDirectory()
@@ -1860,7 +1862,7 @@ whoareyou_Command            = new RebyCommand({prefix:"who are you"            
                 }
         }
     })
-whatsmyip_Command            = new RebyCommand({prefix:"whats my ip"             ,
+whatsmyip_Command            = new RebyCommand({prefix:"whats my ip address"             ,
     initial_check : async function(the_command)
         {
             if (the_command.match(/^what('?s| is) ?my ?ip ?address\?? */i))
