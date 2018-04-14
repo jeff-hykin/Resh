@@ -359,8 +359,9 @@
                         font_class = ""
                         style_     = "max-height: 400px; overflow-y: scroll; overflow-x: scroll;"
                         
+                        var class_ = ""
                         if (monospaced_font)       { style_  += "font-family: monospace;  white-space: pre;" }
-                        if (number_of_newlines>50) { style_  += 'max-height: 400px; overflow-y: scroll;' }
+                        if (number_of_newlines>50) { style_  += 'max-height: 400px; overflow-y: scroll;'; class_ = "Scrollable" }
                         if (dont_wrap_lines)       { style_  += 'white-space: pre;' }
 
                         // give style the proper CSS encasing if there is any styling
@@ -372,7 +373,7 @@
                         // FIXME, check for accidental html-escape sequences 
                         
                         // create Reby's response
-                        $('form.chat div.messages').append('<div class="message"><div class="fromThem"><p class="Scrollable" '+font_class+style_+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
+                        $('form.chat div.messages').append(`<div class="message"><div class="fromThem"><p class="${class_}" `+font_class+style_+'>' + message_ + '</p><date><b>Reby </b>' + currentDate + '</date></div></div>')
                         
                         // Scroll down when the new message_ is made
                         var focusBottom = document.getElementById("main_container")
@@ -789,6 +790,7 @@
                                                                 // if the key is a normal character 
                                                                 //console.log("user typed:",what_the_user_typed);
                                                                 //console.log("suggestion:",command_prefixes[each]+all_file_suggestions[each_folder])
+
                                                                 // if the users input matches one of the commands 
                                                                 if ((command_prefixes[each] +all_file_suggestions[each_folder]).indexOf(what_the_user_typed) == 0)
                                                                     {
@@ -1862,7 +1864,7 @@ whoareyou_Command            = new RebyCommand({prefix:"who are you"            
                 }
         }
     })
-whatsmyip_Command            = new RebyCommand({prefix:"whats my ip address"             ,
+whatsmyip_Command            = new RebyCommand({prefix:"whats my ip address"     ,
     initial_check : async function(the_command)
         {
             if (the_command.match(/^what('?s| is) ?my ?ip ?address\?? */i))
@@ -1969,7 +1971,7 @@ changeowner_Command          = new RebyCommand({prefix:"change owner of "       
                             // FIXME, handle confirmation in unix
                             changeowner_Command.file_location = message_.replace(/^change ?owner\?? ?(of )?/,"")
                             // FIXME, make sure the file exists
-                            if ( message_.trim.length == 0 || !(FileExists(message_) || FolderExists(message_)))
+                            if ( message_.trim().length == 0 || !(FileExists(message_) || FolderExists(message_)))
                                 {
                                     reby.says("Sorry, I don't think thats a file or folder :/")
                                     return null
@@ -1989,7 +1991,7 @@ changeowner_Command          = new RebyCommand({prefix:"change owner of "       
             changeOwner : async function(message_)
                 {
                     // if user responds with "me"
-                    if (!(changeowner_Command.list_of_users.includes('me')) && message_.trim == "me")
+                    if (!(changeowner_Command.list_of_users.includes('me')) && message_.trim() == "me")
                         {
                             await BashRun("chown \"$(whoami)\" "+Escape(changeowner_Command.file_location))
                         }
@@ -2154,6 +2156,7 @@ openwith_Command             = new RebyCommand({prefix:"open [folder] with "    
                 {
                     return async function(message_)
                         {
+                            var list_of_apps = await BashRun("ls -1 /Applications")
                             // FIXME, escaping needs to be added 
                             // FIXME, handle confirmation in unix
                             
@@ -2755,7 +2758,7 @@ search_Command               = new RebyCommand({prefix:"search for"             
                 }
         }
     })
-find_Command                 = new RebyCommand({prefix:"find "              ,
+find_Command                 = new RebyCommand({prefix:"find "                   ,
     initial_check : async function(the_command)
         {
             if (the_command.match(/^(find |where ?is ).+/i))
@@ -2994,10 +2997,14 @@ async function RebyResponse(a_command)
                             }
                     }
                 var response = await BashRun(a_command)
-                if (response.trim.length > 0)
+                if (response.trim().length > 0)
                     {
                         reby.says("This is what bash said after I ran it:\n")
                         reby.says(response,true,true)
+                    }
+                else 
+                    {
+                        reby.says("Bash didn't say anything after I ran it"+`${response}`)
                     }
             }
         else 
