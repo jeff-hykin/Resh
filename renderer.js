@@ -60,6 +60,7 @@
         // DONE, get the app packager for mac working
             
     // Resh 1.0
+        // use promises instead of the current setup 
         // stuff thats DONE 
             // DONE, totally overhaul the current bash system from shelljs to child processes
             // DONE, make basically everything async 
@@ -81,6 +82,7 @@
             // DONE, fix shadow suggestion when a bubble suggestion is clicked
             // DONE, add a change owner command
             // DONE!, Add 0.1 version of sudo command
+            // DONE fix failure to delete 'Finances - 10.csv'
         // refine sudo commands
             // remove general sudo handling add custom sudo command handling
             // check if admin or not before offering to run sudo
@@ -112,7 +114,6 @@
         // Stability fixes
             // fix, hardlink fails if homebrew isnt installed (offer to install homebrew)
             // figure out why env vars are not being set, figure out how to add the paths and other things from .bash_profile 
-            // fix failure to delete 'Finances - 10.csv'
             // fix copy command for folders
             // fix unable to open folder links/aliases
             // make sure deleting links works as intended
