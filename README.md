@@ -1,5 +1,5 @@
 # What is Resh?
-It is a console that everyone can use. It has the power of bash without having to use cryptic commands. The suggestions and tab-to-complete make the interface quite quick despite the longer names for commands. The suggestions make learning new commands incredibly easy. However, it is also fully backwards compatible with console commands (bash or your shell of choice), with the exception of interactive commands (`top`, `vim`, `nano`, interpreters, etc).
+It is a console/command line that everyone can use. It has the power of bash without having to use cryptic commands. The suggestions and tab-to-complete are designed to make the interface quick despite the longer names for commands. The suggestions make learning new commands easy, and Resh is also backwards compatible with traditional commands (bash or your shell of choice), with the exception of interactive commands (`top`, `vim`, `nano`, interpreters, etc).
 
 Demo: https://www.youtube.com/watch?v=_DzvYvrkBXo&feature=youtu.be
 
@@ -9,7 +9,9 @@ Demo: https://www.youtube.com/watch?v=_DzvYvrkBXo&feature=youtu.be
 
 
 # How to test out/install
-Easy! For those familiar with git, clone this repo and then open resh.app inside the newly created resh folder.
+At them moment this is a Mac-only app (with planned future support for linux). For those familiar with git, clone this repo and then open resh.app inside the newly created resh folder.
+
+For those unfamiliar with git, lookup "how to install git" and "how to git clone a repository from github" it shouldn't take long.
 
 
 # Features
@@ -22,9 +24,13 @@ Many things like permissions (bash example: `chmod u+x a_file`) have been totall
 
 
 
-# Development
+# Development / Contributing
 
-This app is still in alpha but is suprizingly useful. The largest missing feature is interactive messages which will hopefully be finished before the end of the summer in 2018. All the basic bash commands have been added, even things like `ssh`. At the moment it is only being developed for Mac. Most of the features will still work on Linux, so once the mac version is complete, I will probably port things to Linux. A beta build will most likely appear around the end of Jan. 
+This app is still in alpha, but is still in active development. I reccomend checking back in the summer of 2019 to see if a stable verison is out. I will eventually develop a beta and full release. The current to-do list is
+* Rewrite the codebase: clean, document, and simplify it
+* Add support for all interactive commands: `top`, `ssh`, etc
+* Port to linux
+* Finish adding a full list of commands
 
 The app is being built using Electron and Node.js.
 
