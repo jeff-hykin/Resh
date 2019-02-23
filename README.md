@@ -26,7 +26,7 @@ Many things like permissions (bash example: `chmod u+x a_file`) have been totall
 
 # Development / Contributing
 
-This app is still in alpha, and isn't abandoned. I reccomend checking back in the summer of 2019 to see if a stable verison is out. I will eventually develop a beta and full release. The current to-do list is
+This app is still in alpha, and isn't abandoned. I reccomend checking back in the summer of 2020 to see if a stable verison is out. I will eventually develop a beta and full release. The current to-do list is
 * Rewrite the codebase: clean, document, and simplify it
 * Add support for all interactive commands: `top`, `ssh`, etc
 * Port to linux
