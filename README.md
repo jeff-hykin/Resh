@@ -1,3 +1,5 @@
+## Note: this project is old, but may be redone in the future!
+
 # What is Resh?
 It is a console/command line that everyone can use. It has the power of bash without having to use cryptic commands. The suggestions and tab-to-complete are designed to make the interface quick despite the longer names for commands. The suggestions make learning new commands easy, and Resh is also backwards compatible with traditional commands (bash or your shell of choice), with the exception of interactive commands (`top`, `vim`, `nano`, interpreters, etc).
 
@@ -26,13 +28,15 @@ Many things like permissions (bash example: `chmod u+x a_file`) have been totall
 
 # Development / Contributing
 
-This app is still in alpha, and isn't abandoned. I reccomend checking back in the summer of 2024 to see if a stable verison is out. I will eventually develop a beta and full release. The current to-do list is
-* Rewrite the codebase: clean, document, and simplify it
+This app is still in alpha, just a demo. I reccomend checking back in the summer of 2024 to see if a stable verison is out. I will probably eventually develop a beta and full release. The current to-do list is
+* Switch to Tauri instead of Electron
+* Bundle and use deno instead of Node.js
+* Rewrite the codebase: clean, document, and simplify
 * Add support for all interactive commands: `top`, `ssh`, etc
-* Port to linux
-* Finish adding a full list of commands
+* Port to Linux
+* Finish adding a full list of human commands
 
-The app is being built using Electron and Node.js.
+The existing app was built using Electron and Node.js.
 
 To run things youself or modify the existing code: 
     install Node.js <br>
