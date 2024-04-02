@@ -3,11 +3,11 @@
 # What is Resh?
 It is a console/command line that everyone can use. It has the power of bash without having to use cryptic commands. The suggestions and tab-to-complete are designed to make the interface quick despite the longer names for commands. The suggestions make learning new commands easy, and Resh is also backwards compatible with traditional commands (bash or your shell of choice), with the exception of interactive commands (`top`, `vim`, `nano`, interpreters, etc).
 
+![rebygif](https://user-images.githubusercontent.com/17692058/29953404-8ec19c4c-8e95-11e7-8770-c628ee57dfe0.gif)
+
 Demo: https://www.youtube.com/watch?v=_DzvYvrkBXo&feature=youtu.be
 
 <img width="776" alt="screen shot 2017-08-28 at 2 22 33 am" src="https://user-images.githubusercontent.com/17692058/29763276-1ef8629c-8b98-11e7-9a9c-1154195a5f52.png">
-
-![rebygif](https://user-images.githubusercontent.com/17692058/29953404-8ec19c4c-8e95-11e7-8770-c628ee57dfe0.gif)
 
 
 # How to test out/install
