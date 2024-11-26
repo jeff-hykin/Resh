@@ -16,7 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "devtron": "^1.4.0",
-    "electron-packager": "^8.7.2",
+    "electron-packager": "^16.0.0",
     "electron-debug": "^1.4.0"
   },
   "dependencies": {
