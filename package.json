@@ -21,6 +21,6 @@
   },
   "dependencies": {
     "child_process": "^1.0.2",
-    "jquery": "^3.2.1"
+    "jquery": "^3.5.0"
   }
 }
